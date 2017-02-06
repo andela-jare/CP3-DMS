@@ -1,0 +1,19 @@
+{
+  "name": "dms",
+  "version": "1.0.0",
+  "description": "Document management system",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andela-jare/CP3-DMS.git"
+  },
+  "author": "Jorg Are",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/andela-jare/CP3-DMS/issues"
+  },
+  "homepage": "https://github.com/andela-jare/CP3-DMS#readme"
+}
