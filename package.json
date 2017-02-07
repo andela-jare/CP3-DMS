@@ -17,7 +17,9 @@
   },
   "homepage": "https://github.com/andela-jare/CP3-DMS#readme",
   "devDependencies": {
+    "coveralls": "*",
     "expect": "^1.20.2",
+    "istanbul": "*",
     "mocha": "^3.2.0",
     "should": "^11.2.0"
   }
