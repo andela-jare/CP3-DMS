@@ -1,3 +1,4 @@
+/* eslint import/no-unresolved: 0 */
 const should = require('should');
 const expect = require('expect');
 
