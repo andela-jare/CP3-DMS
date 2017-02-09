@@ -4,6 +4,8 @@
   "description": "Document management system",
   "main": "server.js",
   "scripts": {
+    "start": "nodemon server.js --exec babel-node",
+    "sequelize:init": "babel-node sequelize init",
     "test": "./node_modules/istanbul/lib/cli.js cover ./node_modules/.bin/_mocha -- -R spec"
   },
   "repository": {
@@ -17,11 +19,26 @@
   },
   "homepage": "https://github.com/andela-jare/CP3-DMS#readme",
   "devDependencies": {
+    "babel-cli": "^6.22.2",
+    "babel-core": "^6.22.1",
+    "babel-preset-env": "^1.1.8",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-register": "^6.22.0",
+    "babelify": "^7.3.0",
     "coveralls": "*",
     "expect": "^1.20.2",
     "istanbul": "*",
     "mocha": "^3.2.0",
     "mocha-lcov-reporter": "^1.2.0",
     "should": "^11.2.0"
+  },
+  "dependencies": {
+    "bcrypt": "^1.0.2",
+    "body-parser": "^1.16.0",
+    "express": "^4.14.1",
+    "morgan": "^1.8.0",
+    "pg": "^6.1.2",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^3.30.2"
   }
 }
