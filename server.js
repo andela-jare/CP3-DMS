@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+/* eslint import/no-unresolved: 0 */
 import http from 'http';
 import express from 'express';
 import path from 'path';
