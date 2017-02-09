@@ -1,4 +1,3 @@
-'use strict';
 module.exports = (sequelize, DataTypes) => {
   const Role = sequelize.define('Role', {
     title: {
@@ -9,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     classMethods: {
       associate: (models) => {
-        
       }
     }
   });

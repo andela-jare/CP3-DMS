@@ -1,9 +1,9 @@
-'use strict';
 import bcrypt from 'bcrypt';
-module.exports = function(sequelize, DataTypes) {
-  var options =  {
-        individualHooks: true
-      };
+
+module.exports = (sequelize, DataTypes) => {
+  const options =  {
+    individualHooks: true
+  };
   const User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
