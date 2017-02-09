@@ -1,5 +1,5 @@
 module.exports = {
-  up(queryInterface, Sequelize){
+  up(queryInterface, Sequelize) {
     return queryInterface.createTable('Users', {
       id: {
         allowNull: false,
@@ -7,7 +7,7 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      username:  {
+      username: {
         unique: true,
         type: Sequelize.STRING
       },

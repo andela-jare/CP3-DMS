@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 
 module.exports = (sequelize, DataTypes) => {
-  const options =  {
+  const options = {
     individualHooks: true
   };
   const User = sequelize.define('User', {
