@@ -17,6 +17,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const port = process.env.PORT || 3000;
 const httpServer = http.createServer(app);
 routes.userRoutes(app);
+routes.documentRoutes(app);
 
 httpServer.listen(port, () => console.log(`Server started at port ${port}`));
 
