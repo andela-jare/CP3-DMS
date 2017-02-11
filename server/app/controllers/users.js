@@ -50,6 +50,11 @@ module.exports = {
     })
     .catch(error => res.status(400).send({ error }));
   },
+  logout(req, res) {
+    return res.status(200).send({
+      message: 'You have successfully logged out'
+    });
+  },
   allUsers(req, res) {
     return User.findAll()
     .then((users) => {
@@ -59,6 +64,20 @@ module.exports = {
       res.status(200).send(users);
     })
     .catch(error => res.status(400).send({ error }));
+  },
+  findUser(req, res) {
+    return User.findById(req.params.id)
+      .then((user) => {
+        if (!user) return res.status(404).send({ message: 'User not found' });
+        res.status(200).send({
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          userId: user.id
+        });
+      })
+      .catch(error => res.status(400).send({ error }));
   },
   update(req, res) {
     return User.findById(req.params.id)
@@ -79,5 +98,22 @@ module.exports = {
         .catch(error => res.status(404).send({ error }));
       })
       .catch(error => res.status(404).send({ error }));
+  },
+  destroy(req, res) {
+    return User.findById(req.params.id)
+      .then((user) => {
+        if (!user) {
+          return res.status(404).send({ error: 'User does not exist' });
+        }
+        if (req.decoded.roleId !== 1 && req.decoded.userId !== user.id) {
+          return res.status(401).send({ error: 'You are not authorized!' });
+        }
+        user.destroy()
+        .then(() => res.status(200).send({
+          message: 'User deleted successfully',
+          userId: user.id
+        }))
+        .catch(error => res.send({ error }));
+      });
   }
 };

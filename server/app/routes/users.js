@@ -9,8 +9,13 @@ module.exports = (app) => {
   app.route('/login')
   .post(controllers.users.login);
 
+  app.route('/logout')
+  .get(controllers.users.logout);
+
   app.use(Authenticate.auth);
 
   app.route('/users/:id')
-  .put(controllers.users.update);
+  .put(controllers.users.update)
+  .get(controllers.users.findUser)
+  .delete(controllers.users.destroy);
 };

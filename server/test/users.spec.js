@@ -155,4 +155,68 @@ describe('Users', () => {
         });
     });
   });
+
+  describe('Find user GET: /users/:id', () => {
+    it('get a user with an id', (done) => {
+      server.get(`/users/${userId}`)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          should(res.body).have.property('username');
+          should(res.body).have.property('firstName');
+          should(res.body).have.property('lastName');
+          should(res.body).have.property('email');
+          should(res.body).have.property('userId');
+          done();
+        });
+    });
+
+    it('should return NOT FOUND for invalid id', (done) => {
+      server.get('/users/100')
+        .set({ 'x-access-token': token })
+        .expect(404, done);
+    });
+  });
+
+  describe('Delete user DELETE: /users/:id', () => {
+    it('should delete own account', (done) => {
+      server.delete(`/users/${userId}`)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          done();
+        });
+    });
+
+    it('admin should be able to  any delete account', (done) => {
+      server.delete('/users/2')
+        .set({ 'x-access-token': adminToken })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          done();
+        });
+    });
+
+    it('should return NOT FOUND for invalid id', (done) => {
+      server.delete('/users/100')
+        .set({ 'x-access-token': token })
+        .expect(404, done);
+    });
+
+    it('should return bad request for invalid access', (done) => {
+      server.delete(`/users/${userId}`)
+        .expect(401, done);
+    });
+  });
+
+  describe('logout GET: /logout', () => {
+    it('should be able to logout', (done) => {
+      server.get('/logout')
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.message.should.equal('You have successfully logged out');
+          done();
+        });
+    });
+  });
 });
