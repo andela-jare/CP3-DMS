@@ -18,6 +18,7 @@ const port = process.env.PORT || 3000;
 const httpServer = http.createServer(app);
 routes.userRoutes(app);
 routes.documentRoutes(app);
+routes.roleRoutes(app);
 
 httpServer.listen(port, () => console.log(`Server started at port ${port}`));
 
