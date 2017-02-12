@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import db from '../../models';
 
 class Authenticate {
   static auth(req, res, next) {
@@ -12,6 +13,17 @@ class Authenticate {
     } else {
       res.status(401).send({ message: 'Authentication is required' });
     }
+  }
+
+  static permitAdmin(req, res, next) {
+    db.Role.findById(req.decoded.roleId)
+      .then((role) => {
+        if (role.title === 'admin') {
+          next();
+        } else {
+          return res.status(403).send({ message: 'You are not an admin' });
+        }
+      });
   }
 }
 // export default Authenticate;

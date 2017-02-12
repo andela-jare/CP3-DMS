@@ -49,6 +49,15 @@ module.exports = {
     roleId: 1
   },
 
+  adminUserRole: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    roleId: 1
+  },
+
   regularUser: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
@@ -79,6 +88,15 @@ module.exports = {
     lastName: faker.name.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password()
+  },
+
+  regularUserRole: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    roleId: 2
   },
 
   badUser: {
@@ -125,5 +143,20 @@ module.exports = {
   document3: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph()
+  },
+  newRole1: {
+    title: 'rookie'
+  },
+  updateRole1: {
+    title: 'rookie update'
+  },
+  duplicateRole1: {
+    title: 'rookie'
+  },
+  newRole2: {
+    title: 'amateur'
+  },
+  newRole3: {
+    title: 'professional'
   }
 };

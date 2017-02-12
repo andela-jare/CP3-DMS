@@ -108,7 +108,7 @@ describe('Users', () => {
 
     it(`should send an error message 
     if user is trying to update another user`, (done) => {
-      server.put('/users/2')
+      server.put(`/users/${adminId}`)
         .set({ 'x-access-token': token })
         .expect(401)
         .end((err, res) => {
@@ -189,7 +189,7 @@ describe('Users', () => {
     });
 
     it('admin should be able to  any delete account', (done) => {
-      server.delete('/users/2')
+      server.delete(`/users/${adminId}`)
         .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);

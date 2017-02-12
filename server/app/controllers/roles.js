@@ -24,11 +24,10 @@ module.exports = {
     if (req.decoded.roleId === 1) {
       return Role.create(req.body)
         .then(role =>
-          res.status(200).send(role)
+          res.status(201).send(role)
         )
         .catch(error => res.status(400).send(error));
     }
-    return res.status(403).send({ message: 'You are not authorized.' });
   },
 
    /**
@@ -47,8 +46,7 @@ module.exports = {
           });
         }
         res.send(role);
-      })
-      .catch(error => res.status(400).send(error));
+      });
   },
 
   /**
@@ -63,7 +61,8 @@ module.exports = {
       .then((role) => {
         if (!role) {
           return res.status(404).send({
-            message: `Role with id: ${req.params.id} not found.`
+            message: `Role with id: ${req.params.id} not found.`,
+            success: false
           });
         }
         role.update(req.body)
