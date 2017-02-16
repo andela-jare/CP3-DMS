@@ -9,7 +9,7 @@ services:
   - postgresql
 
 before_script:
-  - psql -c 'create database doc-test;' -U postgres
+  - psql -c 'create database doc_test;' -U postgres
   - NODE_ENV=test npm run migrate
 
 script:
