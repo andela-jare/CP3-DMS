@@ -3,6 +3,12 @@ import jwt from 'jsonwebtoken';
 import { User } from '../../models';
 
 module.exports = {
+  /**
+   * Create a new user
+   * @param {Object} req - Request object
+   * @param {Object} res - Response object
+   * @returns {Object} - Returns response object
+   */
   create(req, res) {
     return User.create(req.body)
     .then((user) => {
@@ -12,7 +18,7 @@ module.exports = {
           message: 'signedUp',
           userId: user.id,
           roleId: user.roleId
-        }, 'secret', { expiresIn: '1h' });
+        }, 'secret', { expiresIn: '24h' });
         res.status(201).json({
           success: true,
           message: 'You have successfully signed up!',
@@ -24,6 +30,13 @@ module.exports = {
     })
     .catch(error => res.status(400).send({ error }));
   },
+
+  /**
+   * Login a user
+   * @param {Object} req - Request object
+   * @param {Object} res - Response object
+   * @returns {Object} - Returns response object
+   */
   login(req, res) {
     return User.findOne({
       where: {
@@ -37,7 +50,7 @@ module.exports = {
           message: 'loggedIn',
           userId: user.id,
           roleId: user.roleId
-        }, 'secret', { expiresIn: '1h' });
+        }, 'secret', { expiresIn: '24h' });
         return res.status(200).json({
           success: true,
           message: 'You have successfully signed in!',
@@ -50,11 +63,26 @@ module.exports = {
     })
     .catch(error => res.status(400).send({ error }));
   },
+
+  /**
+  * logout - Logout a user
+  *
+  * @param  {Objec} req - Request Object
+  * @param  {Object} res - Response Object
+  * @returns {Object} - Returns response object
+  */
   logout(req, res) {
     return res.status(200).send({
       message: 'You have successfully logged out'
     });
   },
+
+  /**
+   * Get all users with their fields
+   * @param {Object} req - Request object
+   * @param {Object} res - Response object
+   * @returns {Object} Response object
+   */
   allUsers(req, res) {
     return User.findAll()
     .then((users) => {
@@ -65,6 +93,13 @@ module.exports = {
     })
     .catch(error => res.status(400).send({ error }));
   },
+
+  /**
+  * Get a specific user
+  * @param {Object} req - Request object
+  * @param {Object} res - Response object
+  * @returns {Object} - Returns response object
+  */
   findUser(req, res) {
     return User.findById(req.params.id)
       .then((user) => {
@@ -79,6 +114,13 @@ module.exports = {
       })
       .catch(error => res.status(400).send({ error }));
   },
+
+  /**
+   * Edit and update a specific user
+   * @param {Object} req - Request object
+   * @param {Object} res - Response object
+   * @returns {Object} - Returns response object
+   */
   update(req, res) {
     return User.findById(req.params.id)
       .then((user) => {
@@ -99,6 +141,13 @@ module.exports = {
       })
       .catch(error => res.status(404).send({ error }));
   },
+
+  /**
+   * Delete a specific user
+   * @param {Object} req - Request object
+   * @param {Object} res - Response object
+   * @returns {Object} - Returns response object
+   */
   destroy(req, res) {
     return User.findById(req.params.id)
       .then((user) => {
@@ -112,8 +161,7 @@ module.exports = {
         .then(() => res.status(200).send({
           message: 'User deleted successfully',
           userId: user.id
-        }))
-        .catch(error => res.send({ error }));
+        }));
       });
   }
 };

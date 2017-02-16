@@ -3,10 +3,9 @@ import { Role } from '../../models';
 module.exports = {
   /**
    * Get all roles
-   * Route: GET: /roles
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void} no returns
+   * @returns {Object} - Returns response object
    */
   index(req, res) {
     return Role.findAll()
@@ -15,10 +14,9 @@ module.exports = {
 
   /**
    * Create a role
-   * Route: POST: /roles
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void|Response} response object or void
+   * @returns {Object} - Returns response object
    */
   create(req, res) {
     if (req.decoded.roleId === 1) {
@@ -32,10 +30,9 @@ module.exports = {
 
    /**
    * Get a particular role
-   * Route: GET: /roles/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {void|Response} response object or void
+   * @returns {Object} - Returns response object
    */
   find(req, res) {
     return Role.findById(req.params.id)
@@ -51,10 +48,9 @@ module.exports = {
 
   /**
    * Update a particular role
-   * Route: PUT: /roles/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Object} - Returns response object
    */
   update(req, res) {
     return Role.findById(req.params.id)
@@ -72,10 +68,9 @@ module.exports = {
 
   /**
    * Delete a particular role
-   * Route: DELETE: /roles/:id
    * @param {Object} req request object
    * @param {Object} res response object
-   * @returns {Response|void} response object or void
+   * @returns {Object} - Returns response object
    */
   destroy(req, res) {
     return Role.findById(req.params.id)

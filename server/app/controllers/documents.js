@@ -1,6 +1,13 @@
 import { Document } from '../../models';
 
 module.exports = {
+
+  /**
+   * Create a new document
+   * @param {Object} req Request object
+   * @param {Object} res Response object
+   * @returns {Object} - Returns response object
+   */
   create(req, res) {
     return Document.create({
       title: req.body.title,
@@ -11,6 +18,13 @@ module.exports = {
     .then(document => res.status(200).send({ document }))
     .catch(error => res.status(400).send({ error }));
   },
+
+  /**
+   * Gets a document
+   * @param {Object} req Request object
+   * @param {Object} res Response object
+   * @returns {Object} - Returns response object
+   */
   getDocument(req, res) {
     return Document.findById(req.params.id)
       .then((document) => {
@@ -24,9 +38,15 @@ module.exports = {
         }
 
         res.status(403).send({ message: 'You are unauthorized.' });
-      })
-      .catch(error => res.status(400).send({ error }));
+      });
   },
+
+  /**
+   * Gets all documents depending on who is requesting
+   * @param {Object} req Request object
+   * @param {Object} res Response object
+   * @returns {Object} - Returns response object
+   */
   getDocuments(req, res) {
     return Document.findAll({
       where: {
@@ -42,14 +62,20 @@ module.exports = {
     })
     .then((document) => {
       res.status(200).send({ document, id: req.decoded.userId });
-    })
-    .catch(error => res.status(400).send({ error }));
+    });
   },
+
+  /**
+   * Edit and update a specific document
+   * @param {Object} req Request object
+   * @param {Object} res Response object
+   * @returns {Object} - Returns response object
+   */
   update(req, res) {
     return Document.findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404).send({ error: 'Document Not found' });
+          return res.status(404).send({ error: 'Document Not found.' });
         }
         if (document.ownerId !== req.decoded.userId) {
           return res.status(403).send({
@@ -58,9 +84,15 @@ module.exports = {
         }
         document.update(req.body)
         .then(doc => res.status(200).send(doc));
-      })
-      .catch(error => res.status(400).send({ error }));
+      });
   },
+
+  /**
+   * Delete a specific document
+   * @param {Object} req Request object
+   * @param {Object} res Response object
+   * @returns {Object} - Returns response object
+   */
   destroy(req, res) {
     return Document.findById(req.params.id)
       .then((document) => {
@@ -78,9 +110,15 @@ module.exports = {
         .then(() => res.status(200).send({
           message: 'Document successfully deleted!'
         }));
-      })
-      .catch(error => res.status(400).send({ error }));
+      });
   },
+
+  /**
+   * Gets all documents belonging to a specific user
+   * @param {Object} req Request object
+   * @param {Object} res Response object
+   * @returns {Object} - Returns response object
+   */
   usersDocument(req, res) {
     return Document.findAll({
       where: {
@@ -89,7 +127,35 @@ module.exports = {
     })
     .then((documents) => {
       res.status(200).send({ documents });
+    });
+  },
+  /**
+   * Gets all documents relevant to search term
+   * @param {Object} req Request object
+   * @param {Object} res Response object
+   * @returns {Object} - Returns response object
+   */
+  search(req, res) {
+    return Document.findAll({
+      where: {
+        $and: [{
+          $or: {
+            title: {
+              $like: `%${req.query.search}%`
+            },
+            content: {
+              $like: `%${req.query.search}%`
+            }
+          }
+        }, {
+          $or: {
+            ownerId: req.decoded.userId,
+            access: 'public'
+          }
+        }
+        ]
+      }
     })
-    .catch(error => res.status(400).send({ error }));
+    .then(docs => res.status(200).send(docs));
   }
 };

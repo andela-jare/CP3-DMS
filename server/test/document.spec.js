@@ -102,6 +102,16 @@ describe('Document Api', () => {
         });
     });
 
+    it(`should not return private document to a user 
+    who does NOT own the document`, (done) => {
+      server.get(`/documents/${documentId2}`)
+      .set({ 'x-access-token': user4Token })
+        .end((err, res) => {
+          res.status.should.equal(403);
+          done();
+        });
+    });
+
     it('get all document Get /documents', (done) => {
       server.get('/documents')
       .set({ 'x-access-token': token })
@@ -216,6 +226,19 @@ describe('Document Api', () => {
           res.status.should.equal(401);
           done();
         });
+    });
+  });
+
+  describe('Search:', () => {
+    it(`should return all documents for users 
+    where search terms are matched`, (done) => {
+      server.get('/documents/search?search=edit')
+      .set({ 'x-access-token': token })
+      .end((err, res) => {
+        res.status.should.equal(200);
+        res.body.should.be.a.Array();
+        done();
+      });
     });
   });
 

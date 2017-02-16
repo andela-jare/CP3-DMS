@@ -26,5 +26,4 @@ class Authenticate {
       });
   }
 }
-// export default Authenticate;
-module.exports = Authenticate;
+export default Authenticate;

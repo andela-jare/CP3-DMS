@@ -11,6 +11,7 @@
       "amd": true
   },
   "rules": {
+    "import/no-extraneous-dependencies": [0, {"devDependencies": false, "optionalDependencies": false, "peerDependencies": false}],
     "one-var": 0,
     "one-var-declaration-per-line": 0,
     "no-unused-vars": 0,

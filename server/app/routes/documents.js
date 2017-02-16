@@ -1,18 +1,21 @@
-import controllers from '../controllers';
+import { documents } from '../controllers';
 import Authenticate from '../middleware/authenticate';
 
 module.exports = (app) => {
+  app.route('/documents/search')
+  .get(documents.search);
+
   app.use(Authenticate.auth);
 
   app.route('/documents')
-  .post(controllers.documents.create)
-  .get(controllers.documents.getDocuments);
+  .post(documents.create)
+  .get(documents.getDocuments);
 
   app.route('/documents/:id')
-  .get(controllers.documents.getDocument)
-  .put(controllers.documents.update)
-  .delete(controllers.documents.destroy);
+  .get(documents.getDocument)
+  .put(documents.update)
+  .delete(documents.destroy);
 
   app.route('/users/:id/documents')
-  .get(controllers.documents.usersDocument);
+  .get(documents.usersDocument);
 };
