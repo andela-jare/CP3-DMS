@@ -15,10 +15,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 const httpServer = http.createServer(app);
+
 // Endpoints route
-routes.userRoutes(app);
-routes.documentRoutes(app);
-routes.roleRoutes(app);
+app.use('/', routes.userRoutes);
+app.use('/', routes.documentRoutes);
+app.use('/roles', routes.roleRoutes);
 
 httpServer.listen(port, () => console.log(`Server started at port ${port}`));
 

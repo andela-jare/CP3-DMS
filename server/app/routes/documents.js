@@ -1,21 +1,21 @@
+import express from 'express';
 import { documents } from '../controllers';
 import Authenticate from '../middleware/authenticate';
 
-module.exports = (app) => {
-  app.route('/documents/search')
-  .get(documents.search);
+const document = express.Router();
 
-  app.use(Authenticate.auth);
+document.get('/documents/search', Authenticate.auth, documents.search);
+document.post('/documents', Authenticate.auth, documents.create);
+document.get('/documents', Authenticate.auth, documents.getDocuments);
 
-  app.route('/documents')
-  .post(documents.create)
-  .get(documents.getDocuments);
+document
+  .get('/users/:id/documents', Authenticate.auth, documents.usersDocument);
+document.get('/documents/:id', Authenticate.auth, documents.getDocument);
 
-  app.route('/documents/:id')
-  .get(documents.getDocument)
-  .put(documents.update)
-  .delete(documents.destroy);
+document.put('/documents/:id', Authenticate.auth, documents.update);
 
-  app.route('/users/:id/documents')
-  .get(documents.usersDocument);
-};
+document.delete('/documents/:id', Authenticate.auth, documents.destroy);
+
+document.get('/documents/search', documents.search);
+
+export default document;

@@ -1,15 +1,14 @@
+import express from 'express';
 import { roles } from '../controllers';
 import Authenticate from '../middleware/authenticate';
 
-module.exports = (app) => {
-  app.use(Authenticate.auth, Authenticate.permitAdmin);
+const role = express.Router();
 
-  app.route('/roles')
-  .post(roles.create)
-  .get(roles.index);
+role.post('/', Authenticate.auth, Authenticate.permitAdmin, roles.create);
+role.get('/', Authenticate.auth, Authenticate.permitAdmin, roles.index);
 
-  app.route('/roles/:id')
-  .put(roles.update)
-  .get(roles.find)
-  .delete(roles.destroy);
-};
+role.put('/:id', Authenticate.auth, Authenticate.permitAdmin, roles.update);
+role.get('/:id', Authenticate.auth, Authenticate.permitAdmin, roles.find);
+role.delete('/:id', Authenticate.auth, Authenticate.permitAdmin, roles.destroy);
+
+export default role;

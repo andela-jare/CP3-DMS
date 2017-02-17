@@ -1,21 +1,18 @@
+import express from 'express';
 import { users } from '../controllers';
 import Authenticate from '../middleware/authenticate';
 
-module.exports = (app) => {
-  app.route('/users')
-  .post(users.create)
-  .get(Authenticate.auth, users.allUsers);
+const user = express.Router();
 
-  app.route('/login')
-  .post(users.login);
+user.post('/users', users.create);
+user.post('/login', users.login);
+user.get('/logout', users.logout);
 
-  app.route('/logout')
-  .get(users.logout);
+user.get('/users', Authenticate.auth, users.allUsers);
+user.get('/users/:id', Authenticate.auth, users.findUser);
 
-  app.use(Authenticate.auth);
+user.put('/users/:id', Authenticate.auth, users.update);
 
-  app.route('/users/:id')
-  .put(users.update)
-  .get(users.findUser)
-  .delete(users.destroy);
-};
+user.delete('/users/:id', Authenticate.auth, users.destroy);
+
+export default user;
