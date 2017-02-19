@@ -91,7 +91,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('should get private document for admin', (done) => {
+    it('should get a private document for an admin', (done) => {
       server.get(`/documents/${documentId2}`)
       .set({ 'x-access-token': adminToken })
         .end((err, res) => {
@@ -110,13 +110,25 @@ describe('Document Api', () => {
         });
     });
 
-    it('should return all document', (done) => {
+    it('should return all documents', (done) => {
       server.get('/documents')
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.document.should.be.a.Array();
-          should(res.body.document[1].access).equal('private');
+          should(res.body.document[0].access).equal('private');
+          should(res.body.document.length).equal(2);
+          done();
+        });
+    });
+
+    it('should return all documents to an admin', (done) => {
+      server.get('/documents')
+      .set({ 'x-access-token': adminToken })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.document.should.be.a.Array();
+          should(res.body.document.length).equal(2);
           done();
         });
     });
@@ -128,6 +140,7 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.document.should.be.a.Array();
+          should(res.body.document.length).equal(1);
           should(res.body.document[0].access).equal('public');
           done();
         });
@@ -159,7 +172,7 @@ describe('Document Api', () => {
       title: 'Not valid',
     };
     it('should edit document', (done) => {
-      server.put(`/documents/${documentId1}`)
+      server.put(`/documents/${documentId2}`)
       .send(doc)
       .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -225,11 +238,35 @@ describe('Document Api', () => {
   describe('Search:', () => {
     it(`should return all documents for users 
     where search terms are matched`, (done) => {
-      server.get('/documents/search?search=edit')
+      server.get('/documents/search?search=Doc 1 edit')
       .set({ 'x-access-token': token })
       .end((err, res) => {
         res.status.should.equal(200);
         res.body.should.be.a.Array();
+        should(res.body.length).equal(1);
+        done();
+      });
+    });
+
+    it('should return all documents to an admin', (done) => {
+      server.get('/documents/search?search=Doc 1 edit')
+      .set({ 'x-access-token': adminToken })
+      .end((err, res) => {
+        res.status.should.equal(200);
+        res.body.should.be.a.Array();
+        should(res.body.length).equal(1);
+        done();
+      });
+    });
+
+    it(`should return the user's documents and public documents of other
+    users where search terms are matched`, (done) => {
+      server.get('/documents/search?search=Doc 1 edit')
+      .set({ 'x-access-token': user4Token })
+      .end((err, res) => {
+        res.status.should.equal(200);
+        res.body.should.be.a.Array();
+        should(res.body.length).equal(0);
         done();
       });
     });

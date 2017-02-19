@@ -48,7 +48,7 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   getDocuments(req, res) {
-    return Document.findAll({
+    let query = {
       where: {
         $or: [
           {
@@ -58,8 +58,14 @@ module.exports = {
             access: { $eq: 'public' }
           }
         ]
-      },
-    })
+      }
+    };
+
+    if (req.decoded.roleId === 1) {
+      query = {};
+    }
+    query.order = '"createdAt" DESC';
+    return Document.findAll(query)
     .then((document) => {
       res.status(200).send({ document, id: req.decoded.userId });
     });
@@ -136,7 +142,7 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   search(req, res) {
-    return Document.findAll({
+    let query = {
       where: {
         $and: [{
           $or: {
@@ -155,7 +161,22 @@ module.exports = {
         }
         ]
       }
-    })
+    };
+
+    if (req.decoded.roleId === 1) {
+      query = { where: {
+        $or: {
+          title: {
+            $like: `%${req.query.search}%`
+          },
+          content: {
+            $like: `%${req.query.search}%`
+          }
+        }
+      }};
+    }
+    query.order = '"createdAt" DESC';
+    return Document.findAll(query)
     .then(docs => res.status(200).send(docs));
   }
 };
