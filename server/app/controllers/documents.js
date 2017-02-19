@@ -85,7 +85,7 @@ module.exports = {
         }
         if (document.ownerId !== req.decoded.userId) {
           return res.status(403).send({
-            message: 'You are not allowed to view this document.'
+            message: 'You are not allowed to edit this document.'
           });
         }
         document.update(req.body)
@@ -126,13 +126,17 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   usersDocument(req, res) {
+    const id = Number(req.params.id);
     return Document.findAll({
       where: {
-        ownerId: req.params.id
+        ownerId: id
       }
     })
     .then((documents) => {
-      res.status(200).send({ documents });
+      if (req.decoded.userId === id || req.decoded.roleId === 1) {
+        return res.status(200).send({ documents });
+      }
+      res.status(403).send({error: 'Access denied! '});
     });
   },
   /**

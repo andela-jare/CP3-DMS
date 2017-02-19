@@ -214,8 +214,7 @@ describe('Document Api', () => {
   });
 
   describe('User\'s document', () => {
-    it(`should return all documents for a particular user 
-    GET users/:id/documents`, (done) => {
+    it('should return all documents to the owner', (done) => {
       server.get(`/users/${userId}/documents`)
       .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -225,8 +224,28 @@ describe('Document Api', () => {
         });
     });
 
-    it(`should return error if user is not authorized 
-    GET users/:id/documents`, (done) => {
+    it(`should return all documents for a particular user 
+    to an admin`, (done) => {
+      server.get(`/users/${userId}/documents`)
+      .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.documents.should.be.a.Array();
+          done();
+        });
+    });
+
+    it(`should return error if 
+    user is not the owner of the id or an admin`, (done) => {
+      server.get(`/users/${userId}/documents`)
+      .set({ 'x-access-token': user4Token })
+        .end((err, res) => {
+          res.status.should.equal(403);
+          done();
+        });
+    });
+
+    it('should return error if user is not logged in', (done) => {
       server.get(`/users/${userId}/documents`)
         .end((err, res) => {
           res.status.should.equal(401);
