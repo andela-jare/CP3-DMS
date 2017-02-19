@@ -34,7 +34,7 @@ describe('Document Api', () => {
   });
 
   describe('Create', () => {
-    it('should create document POST /documents', (done) => {
+    it('should create new document', (done) => {
       server.post('/documents')
       .send(testData.document)
       .set({ 'x-access-token': token })
@@ -46,8 +46,7 @@ describe('Document Api', () => {
         });
     });
 
-    it(`should not create document with null fields 
-    POST /documents`, (done) => {
+    it('should not create document with null field(s)', (done) => {
       const doc = {
         title: 'Doc 1',
       };
@@ -60,8 +59,7 @@ describe('Document Api', () => {
         });
     });
 
-    it(`should send an error message for a user not logged in 
-    POST /documents`, (done) => {
+    it('should send an error message for a user not logged in', (done) => {
       server.post('/documents')
       .send(testData.document2)
         .end((err, res) => {
@@ -70,7 +68,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('should be able to make document private POST /documents', (done) => {
+    it('should be able to make document', (done) => {
       server.post('/documents')
       .send(testData.document2)
       .set({ 'x-access-token': token })
@@ -84,7 +82,7 @@ describe('Document Api', () => {
   });
 
   describe('Find', () => {
-    it('document Get /documents/:id', (done) => {
+    it('should return document', (done) => {
       server.get(`/documents/${documentId1}`)
       .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -93,7 +91,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('get document Get /documents/:id', (done) => {
+    it('should get private document for admin', (done) => {
       server.get(`/documents/${documentId2}`)
       .set({ 'x-access-token': adminToken })
         .end((err, res) => {
@@ -112,7 +110,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('get all document Get /documents', (done) => {
+    it('should return all document', (done) => {
       server.get('/documents')
       .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -123,9 +121,8 @@ describe('Document Api', () => {
         });
     });
 
-    it(`documents which are public not private can be accessible by users 
-    who are not the owner of the document 
-    and are neither admin Get /documents`, (done) => {
+    it(`should return only public documents to a user 
+    who is not the owner or an admin`, (done) => {
       server.get('/documents')
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
@@ -136,8 +133,7 @@ describe('Document Api', () => {
         });
     });
 
-    it(`should return error for a not logged in user 
-    Get /documents`, (done) => {
+    it('should return error for a not logged in user', (done) => {
       server.get('/documents')
         .end((err, res) => {
           res.status.should.equal(401);
@@ -145,8 +141,7 @@ describe('Document Api', () => {
         });
     });
 
-    it(`should return not found for a document not created 
-    GET /documents/:id`, (done) => {
+    it('should return not found for a document not created', (done) => {
       server.get('/documents/122')
       .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -163,7 +158,7 @@ describe('Document Api', () => {
     const doc2 = {
       title: 'Not valid',
     };
-    it('should edit document PUT /documents/:id', (done) => {
+    it('should edit document', (done) => {
       server.put(`/documents/${documentId1}`)
       .send(doc)
       .set({ 'x-access-token': token })
@@ -174,8 +169,7 @@ describe('Document Api', () => {
         });
     });
 
-    it(`should return not found 
-    for a document not created PUT /documents/:id`, (done) => {
+    it('should return not found for a document not created', (done) => {
       server.put('/documents/122')
       .send(doc)
       .set({ 'x-access-token': token })
@@ -185,8 +179,7 @@ describe('Document Api', () => {
         });
     });
 
-    it(`should return error 
-    if user is not authorized PUT /documents/:id`, (done) => {
+    it('should return error if user is not authorized', (done) => {
       server.put(`/documents/${documentId1}`)
       .send(doc)
         .end((err, res) => {
@@ -196,7 +189,7 @@ describe('Document Api', () => {
     });
 
     it(`should return error 
-    if user is not the owner of the document PUT /documents/:id`, (done) => {
+    if user is not the owner of the document`, (done) => {
       server.put(`/documents/${documentId1}`)
       .send(doc2)
       .set({ 'x-access-token': user4Token })

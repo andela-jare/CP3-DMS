@@ -58,6 +58,7 @@ describe('Users', () => {
         });
     });
   });
+
   describe('on login', () => {
     it('should give token to valid users', (done) => {
       server.post('/login')
@@ -69,6 +70,7 @@ describe('Users', () => {
           done();
         });
     });
+
     it('should throw an error for invalid users', (done) => {
       server.post('/login')
       .send(testData.regularUser2)
@@ -81,7 +83,8 @@ describe('Users', () => {
         });
     });
   });
-  describe('edit user PUT: /users/:id', () => {
+
+  describe('edit user ', () => {
     it('updates the user attributes', (done) => {
       const newAttributes = {
         firstName: 'John', lastName: 'Doe', email: 'johndoe@mail.com'
@@ -128,7 +131,7 @@ describe('Users', () => {
     });
   });
 
-  describe('get all users GET: /users', () => {
+  describe('get all users', () => {
     it('should return all users to an admin', (done) => {
       server.get('/users')
         .set({ 'x-access-token': adminToken })
@@ -156,7 +159,7 @@ describe('Users', () => {
     });
   });
 
-  describe('Find user GET: /users/:id', () => {
+  describe('Find user', () => {
     it('get a user with an id', (done) => {
       server.get(`/users/${userId}`)
         .set({ 'x-access-token': token })
@@ -178,7 +181,7 @@ describe('Users', () => {
     });
   });
 
-  describe('Delete user DELETE: /users/:id', () => {
+  describe('Delete user', () => {
     it('should delete own account', (done) => {
       server.delete(`/users/${userId}`)
         .set({ 'x-access-token': token })
@@ -209,7 +212,7 @@ describe('Users', () => {
     });
   });
 
-  describe('logout GET: /logout', () => {
+  describe('logout', () => {
     it('should be able to logout', (done) => {
       server.get('/logout')
         .end((err, res) => {
