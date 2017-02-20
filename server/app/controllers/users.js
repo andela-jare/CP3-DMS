@@ -12,13 +12,13 @@ module.exports = {
   create(req, res) {
     return User.create(req.body)
     .then((user) => {
-      bcrypt.compare(req.body.password, user.password, (error, result) => {
+      bcrypt.compare(req.body.password, user.password, (error) => {
         if (error) return res.status(400).send({ error });
         const token = jwt.sign({
           message: 'signedUp',
           userId: user.id,
           roleId: user.roleId
-        }, 'secret', { expiresIn: '24h' });
+        }, `${process.env.SECRET}`, { expiresIn: '24h' });
         res.status(201).json({
           success: true,
           message: 'You have successfully signed up!',
@@ -50,7 +50,7 @@ module.exports = {
           message: 'loggedIn',
           userId: user.id,
           roleId: user.roleId
-        }, 'secret', { expiresIn: '24h' });
+        }, `${process.env.SECRET}`, { expiresIn: '24h' });
         return res.status(200).json({
           success: true,
           message: 'You have successfully signed in!',
