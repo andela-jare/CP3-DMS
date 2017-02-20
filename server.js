@@ -4,8 +4,10 @@ import http from 'http';
 import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
 import routes from './server/app/routes';
 
+dotenv.config();
 const app = express();
 
 app.use(morgan('dev'));
