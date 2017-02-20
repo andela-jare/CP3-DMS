@@ -4,7 +4,8 @@
   "description": "Document management system",
   "main": "server.js",
   "scripts": {
-    "start": "nodemon server.js --exec babel-node",
+    "start": "babel-node server.js",
+    "start:dev": "nodemon server.js --exec babel-node",
     "seed": "NODE_ENV=test ./node_modules/.bin/babel-node server/test/helpers/seedHelper.js",
     "migrate": "sequelize db:migrate",
     "mocha": "mocha --compilers js:babel-core/register server/test",
