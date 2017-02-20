@@ -136,7 +136,7 @@ module.exports = {
       if (req.decoded.userId === id || req.decoded.roleId === 1) {
         return res.status(200).send({ documents });
       }
-      res.status(403).send({error: 'Access denied! '});
+      res.status(403).send({ error: 'Access denied!' });
     });
   },
   /**
@@ -177,7 +177,7 @@ module.exports = {
             $like: `%${req.query.search}%`
           }
         }
-      }};
+      } };
     }
     query.order = '"createdAt" DESC';
     return Document.findAll(query)
