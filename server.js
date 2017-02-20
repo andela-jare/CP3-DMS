@@ -7,7 +7,6 @@ import bodyParser from 'body-parser';
 import routes from './server/app/routes';
 
 const app = express();
-const router = express.Router();
 
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -20,6 +19,11 @@ const httpServer = http.createServer(app);
 app.use('/', routes.userRoutes);
 app.use('/', routes.documentRoutes);
 app.use('/roles', routes.roleRoutes);
+
+// Setup a default catch-all route that sends back a welcome message.
+app.get('*', (req, res) => res.status(200).send({
+  message: 'Welcome to Document management',
+}));
 
 httpServer.listen(port, () => console.log(`Server started at port ${port}`));
 
