@@ -51,23 +51,18 @@ module.exports = {
     let query = {
       where: {
         $or: [
-          {
-            ownerId: { $eq: req.decoded.userId },
-          },
-          {
-            access: { $eq: 'public' }
-          }
+          { ownerId: { $eq: req.decoded.userId } },
+          { access: { $eq: 'public' } }
         ]
       }
     };
-
-    if (req.decoded.roleId === 1) {
-      query = {};
-    }
+    query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
+    query.limit = req.query.limit ? req.query.limit : 10;
+    query.offset = req.query.offset ? req.query.offset : 0;
     return Document.findAll(query)
     .then((document) => {
-      res.status(200).send({ document, id: req.decoded.userId });
+      res.status(200).send({ document });
     });
   },
 
@@ -146,15 +141,16 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   search(req, res) {
+    const search = req.query.search.trim();
     let query = {
       where: {
         $and: [{
           $or: {
             title: {
-              $like: `%${req.query.search}%`
+              $ilike: `%${search}%`
             },
             content: {
-              $like: `%${req.query.search}%`
+              $ilike: `%${search}%`
             }
           }
         }, {
@@ -171,16 +167,19 @@ module.exports = {
       query = { where: {
         $or: {
           title: {
-            $like: `%${req.query.search}%`
+            $ilike: `%${search}%`
           },
           content: {
-            $like: `%${req.query.search}%`
+            $ilike: `%${search}%`
           }
         }
       } };
     }
     query.order = '"createdAt" DESC';
+    query.limit = req.query.limit ? +req.query.limit : 10;
+    query.offset = req.query.offset ? +req.query.offset : 0;
     return Document.findAll(query)
-    .then(docs => res.status(200).send(docs));
+    .then(docs => res.status(200).send(docs))
+    .catch(error => res.status(400).send({ error }));
   }
 };

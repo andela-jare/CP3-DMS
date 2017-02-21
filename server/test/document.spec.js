@@ -107,7 +107,7 @@ describe('Document Api', () => {
     });
 
     it('should return all documents the user has access to.', (done) => {
-      server.get('/documents')
+      server.get('/documents?limit=10&offset=0')
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
@@ -253,7 +253,7 @@ describe('Document Api', () => {
   describe('Search:', () => {
     it(`should return all documents for users 
     where search terms are matched`, (done) => {
-      server.get('/documents/search?search=Doc 1 edit')
+      server.get('/documents/search?search=Doc 1 edit&limit=10&offset=0')
       .set({ 'x-access-token': token })
       .end((err, res) => {
         res.status.should.equal(200);
