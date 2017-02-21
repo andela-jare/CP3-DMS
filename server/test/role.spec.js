@@ -2,13 +2,10 @@ import supertest from 'supertest';
 import should from 'should';
 import app from '../../server';
 import testData from './helpers/specHelper';
-import database from '../models';
-
 
 const server = supertest.agent(app);
 
-let adminToken, adminId, regularUserToken,
-  regularUserId, newRoleId, newRoleTitle;
+let adminToken, regularUserToken, newRoleId, newRoleTitle;
 
 describe('Roles:', () => {
   before((done) => {
@@ -16,12 +13,10 @@ describe('Roles:', () => {
     .send(testData.adminUserRole)
     .end((error, res) => {
       adminToken = res.body.token;
-      adminId = res.body.userId;
       server.post('/users')
       .send(testData.regularUserRole)
       .end((error1, res) => {
         regularUserToken = res.body.token;
-        regularUserId = res.body.userId;
         done();
       });
     });

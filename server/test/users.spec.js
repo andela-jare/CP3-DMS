@@ -1,7 +1,5 @@
 import supertest from 'supertest';
-import expect from 'expect';
 import should from 'should';
-import db from '../../server/models';
 import app from '../../server';
 import testData from './helpers/specHelper';
 

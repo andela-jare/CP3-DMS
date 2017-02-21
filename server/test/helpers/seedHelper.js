@@ -1,5 +1,3 @@
-import faker from 'faker';
-import bcrypt from 'bcrypt';
 import logger from 'fm-log';
 import db from '../../models';
 
@@ -10,7 +8,6 @@ class SeedHelper {
 
   /**
    * Perform the sequential population of the db
-   * in order of associations
    * @return {Void} - Returns Void
    */
   static init() {
@@ -37,9 +34,6 @@ class SeedHelper {
       },
     ];
     return db.Role.bulkCreate(roles);
-  }
-  static hashPass(password) {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(5));
   }
 }
 

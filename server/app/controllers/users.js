@@ -126,7 +126,9 @@ module.exports = {
       .then((user) => {
         if (!user) {
           return res.status(404).send({ error: 'User Not found' });
-        } else if (Number(req.params.id) !== req.decoded.userId) {
+        } else if (Number(req.params.id) !== req.decoded.userId
+        || req.decoded.roleId === 1
+        ) {
           return res.status(401).send({ error: 'Unauthorized user' });
         }
         user.update(req.body, {

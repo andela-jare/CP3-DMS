@@ -1,12 +1,10 @@
 import supertest from 'supertest';
 import should from 'should';
-import db from '../../server/models';
 import app from '../../server';
 import testData from './helpers/specHelper';
 
 const server = supertest.agent(app);
-let token, adminToken, user4Token, userId,
-  adminId, user4Id, documentId1, documentId2;
+let token, adminToken, user4Token, userId, documentId1, documentId2;
 
 describe('Document Api', () => {
   before((done) => {
@@ -21,14 +19,12 @@ describe('Document Api', () => {
       .end((err, res) => {
         should(res.body).have.property('token');
         adminToken = res.body.token;
-        adminId = res.body.userId;
       });
     server.post('/users')
       .send(testData.regularUser4)
       .end((err, res) => {
         should(res.body).have.property('token');
         user4Token = res.body.token;
-        user4Id = res.body.userId;
         done();
       });
   });
