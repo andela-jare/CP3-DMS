@@ -1,9 +1,6 @@
 import bcrypt from 'bcrypt';
 
 module.exports = (sequelize, DataTypes) => {
-  const options = {
-    individualHooks: true
-  };
   const User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
@@ -78,7 +75,7 @@ module.exports = (sequelize, DataTypes) => {
       beforeCreate(user) {
         user.hashPassword();
       },
-      beforeUpdate(user, options) {
+      beforeUpdate(user) {
         user.hashPassword();
       }
     }
