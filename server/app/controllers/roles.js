@@ -19,13 +19,11 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   create(req, res) {
-    if (req.decoded.roleId === 1) {
-      return Role.create(req.body)
-        .then(role =>
-          res.status(201).send(role)
+    return Role.create(req.body)
+      .then(role =>
+        res.status(201).send(role)
         )
-        .catch(error => res.status(400).send(error));
-    }
+      .catch(error => res.status(400).send(error));
   },
 
    /**

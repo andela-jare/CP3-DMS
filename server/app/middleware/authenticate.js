@@ -17,7 +17,7 @@ class Authenticate {
   static auth(req, res, next) {
     const token = req.headers['x-access-token'] || req.body.token;
     if (token) {
-      jwt.verify(token, 'secret', (error, decoded) => {
+      jwt.verify(token, process.env.SECRET, (error, decoded) => {
         if (error) return res.status(403).send(error);
         req.decoded = decoded;
         next();

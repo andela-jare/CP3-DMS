@@ -87,8 +87,7 @@ describe('Roles:', () => {
       });
     });
 
-    it(`should NOT allow an Admin user with VALID token UPDATE a 
-    NON-EXISTENT Role`, (done) => {
+    it('should return not found for a not-existing role', (done) => {
       server.put(`/roles/${newRoleId + 300}`)
       .set({ 'x-access-token': adminToken })
       .send(testData.updateRole1)
@@ -191,7 +190,7 @@ describe('Roles:', () => {
     });
   });
 
-  describe('Get', () => {
+  describe('Delete Roles', () => {
     it('should NOT allow a Non-Admin User with VALID token to delete a role',
     (done) => {
       server.delete(`/roles/${newRoleId}`)
@@ -212,7 +211,8 @@ describe('Roles:', () => {
       });
     });
 
-    it('should return when an Admin User deletes a NON-EXISTENT Role',
+    it(`should return not found 
+    when an Admin User tries to delete a NON-EXISTENT Role`,
     (done) => {
       server.delete(`/roles/${newRoleId + 90}`)
       .set({ 'x-access-token': adminToken })

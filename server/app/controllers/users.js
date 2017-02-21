@@ -59,7 +59,9 @@ module.exports = {
           userEmail: user.email
         });
       }
-      return res.status(400).send({ message: 'error' });
+      return res.status(400).send({
+        message: 'Incorrect username and password combination!'
+      });
     })
     .catch(error => res.status(400).send({ error }));
   },

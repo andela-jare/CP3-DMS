@@ -119,7 +119,7 @@ describe('Users', () => {
         });
     });
 
-    it('should return bad request for invalid access', (done) => {
+    it('should return unauthorized for a user not logged in.', (done) => {
       server.put(`/users/${userId}`)
         .expect(401)
         .end((err, res) => {

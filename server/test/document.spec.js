@@ -77,7 +77,7 @@ describe('Document Api', () => {
     });
   });
 
-  describe('Find', () => {
+  describe('Get Documents', () => {
     it('should return document', (done) => {
       server.get(`/documents/${documentId1}`)
       .set({ 'x-access-token': token })
@@ -106,7 +106,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('should return all documents', (done) => {
+    it('should return all documents the user has access to.', (done) => {
       server.get('/documents')
       .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -160,14 +160,14 @@ describe('Document Api', () => {
     });
   });
 
-  describe('Edit', () => {
+  describe('Edit Documents', () => {
     const doc = {
       title: 'Doc 1 edit',
     };
     const doc2 = {
       title: 'Not valid',
     };
-    it('should edit document', (done) => {
+    it('should edit document the user has access to.', (done) => {
       server.put(`/documents/${documentId2}`)
       .send(doc)
       .set({ 'x-access-token': token })
@@ -178,7 +178,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('should return not found for a document not created', (done) => {
+    it('should return not found for a document non-existing', (done) => {
       server.put('/documents/122')
       .send(doc)
       .set({ 'x-access-token': token })
