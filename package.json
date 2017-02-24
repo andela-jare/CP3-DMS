@@ -6,11 +6,13 @@
   "scripts": {
     "start": "babel-node server.js",
     "start:dev": "nodemon server.js --exec babel-node",
-    "seed": "NODE_ENV=test ./node_modules/.bin/babel-node server/test/helpers/seedHelper.js",
+    "seed": "NODE_ENV=test ./node_modules/.bin/babel-node server/tests/helpers/seedHelper.js",
     "migrate": "sequelize db:migrate",
-    "mocha": "mocha --compilers js:babel-core/register server/test",
-    "test": "NODE_ENV=test npm run seed && rm -rf coverage/ && NODE_ENV=test babel-node ./node_modules/babel-istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec server/test",
-    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls"
+    "mocha": "mocha --compilers js:babel-core/register server/tests",
+    "test": "NODE_ENV=test npm run seed && rm -rf coverage/ && NODE_ENV=test babel-node ./node_modules/babel-istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec server/tests",
+    "test:watch": "npm run test -- --watch",
+    "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
+    "lint": "node_modules/.bin/eslint server.js; true -- --watch"
   },
   "repository": {
     "type": "git",
@@ -30,7 +32,6 @@
     "expect": "^1.20.2",
     "faker": "^3.1.0",
     "fm-log": "^4.4.3",
-    "istanbul": "*",
     "mocha": "^3.2.0",
     "mocha-lcov-reporter": "^1.2.0",
     "should": "^11.2.0",

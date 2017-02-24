@@ -49,7 +49,7 @@ module.exports = {
     roleId: 1
   },
 
-  adminUserRole: {
+  adminUser6: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -90,7 +90,7 @@ module.exports = {
     password: faker.internet.password()
   },
 
-  regularUserRole: {
+  regularUser6: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),

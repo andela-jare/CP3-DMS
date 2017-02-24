@@ -18,12 +18,14 @@ class Authenticate {
     const token = req.headers['x-access-token'] || req.body.token;
     if (token) {
       jwt.verify(token, process.env.SECRET, (error, decoded) => {
-        if (error) return res.status(403).send(error);
+        if (error) return res.status(401).send(error);
         req.decoded = decoded;
         next();
       });
     } else {
-      res.status(401).send({ message: 'Authentication is required' });
+      res.status(403).send({
+        message: 'Authentication is required. No token provided.'
+      });
     }
   }
 
@@ -41,7 +43,7 @@ class Authenticate {
         if (role.title === 'admin') {
           next();
         } else {
-          return res.status(403).send({ message: 'You are not an admin' });
+          return res.status(401).send({ message: 'You are not authorized!' });
         }
       });
   }

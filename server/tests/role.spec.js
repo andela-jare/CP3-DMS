@@ -10,11 +10,11 @@ let adminToken, regularUserToken, newRoleId, newRoleTitle;
 describe('Roles:', () => {
   before((done) => {
     server.post('/users')
-    .send(testData.adminUserRole)
+    .send(testData.adminUser6)
     .end((error, res) => {
       adminToken = res.body.token;
       server.post('/users')
-      .send(testData.regularUserRole)
+      .send(testData.regularUser6)
       .end((error1, res) => {
         regularUserToken = res.body.token;
         done();
@@ -37,45 +37,42 @@ describe('Roles:', () => {
       });
     });
 
-    it(`should NOT allow an Admin user with VALID token create a
-     DUPLICATE Role`,
-    (done) => {
+    it('should NOT allow DUPLICATE Role', (done) => {
       server.post('/roles')
       .set({ 'x-access-token': adminToken })
-      .send(testData.duplicateRole1)
+      .send(testData.newRole1)
       .end((error, res) => {
         should(res.status).equal(400);
         done();
       });
     });
 
-    it(`should NOT allow any User with an INVALID token 
-    create a Role`,
+    it('should NOT allow any User with an INVALID token create a Role',
     (done) => {
       server.post('/roles')
       .set({ 'x-access-token': 'invalid token' })
       .send(testData.newRole2)
       .end((error, res) => {
-        should(res.status).equal(403);
+        should(res.status).equal(401);
         done();
       });
     });
 
-    it(`should NOT allow a NON-Admin User with a VALID token 
-    create a Role`,
+    it('should NOT allow a NON-Admin User create a Role',
     (done) => {
       server.post('/roles')
       .set({ 'x-access-token': regularUserToken })
       .send(testData.newRole3)
       .end((error, res) => {
-        should(res.status).equal(403);
+        res.status.should.equal(401);
+        res.body.message.should.equal('You are not authorized!');
         done();
       });
     });
   });
 
   describe('Update Role', () => {
-    it('should allow only an Admin user with VALID token UPDATE a Role',
+    it('should allow only an Admin user update a role',
     (done) => {
       server.put(`/roles/${newRoleId}`)
       .set({ 'x-access-token': adminToken })
@@ -87,13 +84,15 @@ describe('Roles:', () => {
       });
     });
 
-    it('should return not found for a not-existing role', (done) => {
+    it('should return not found for a non-existing role', (done) => {
       server.put(`/roles/${newRoleId + 300}`)
       .set({ 'x-access-token': adminToken })
       .send(testData.updateRole1)
       .end((error, res) => {
         should(res.status).equal(404);
         should(res.body.success).equal(false);
+        res.body.message.should
+        .equal(`Role with id: ${newRoleId + 300} not found.`);
         done();
       });
     });
@@ -105,19 +104,17 @@ describe('Roles:', () => {
       .set({ 'x-access-token': 'invalid token' })
       .send(testData.updateRole1)
       .end((error, res) => {
-        should(res.status).equal(403);
+        should(res.status).equal(401);
         done();
       });
     });
 
-    it(`should NOT allow a NON-Admin User with a VALID token 
-    UPDATE a Role`,
-    (done) => {
+    it('should NOT allow a NON-Admin User update a Role', (done) => {
       server.put(`/roles/${newRoleId}`)
       .set({ 'x-access-token': regularUserToken })
       .send(testData.updateRole1)
       .end((error, res) => {
-        should(res.status).equal(403);
+        should(res.status).equal(401);
         done();
       });
     });
@@ -131,6 +128,7 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(200);
         res.body.should.be.a.Array();
+        res.body.length.should.equal(3);
         done();
       });
     });
@@ -149,22 +147,22 @@ describe('Roles:', () => {
       });
     });
 
-    it(`should NOT allow any User (Admin, Regular, ...) with an INVALID 
+    it(`should NOT allow any User with an INVALID 
     token to get all Roles`, (done) => {
       server.get('/roles')
       .set({ 'x-access-token': 'invalid token' })
       .end((error, res) => {
-        should(res.status).equal(403);
+        should(res.status).equal(401);
         done();
       });
     });
 
-    it('should NOT allow a Non-Admin User with VALID token get all Roles',
+    it('should NOT allow a Non-Admin User get Roles',
     (done) => {
       server.get('/roles')
       .set({ 'x-access-token': regularUserToken })
       .end((error, res) => {
-        should(res.status).equal(403);
+        should(res.status).equal(401);
         done();
       });
     });
@@ -175,49 +173,53 @@ describe('Roles:', () => {
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(200);
+        should(res.body.title).equal('rookie update');
         done();
       });
     });
 
-    it('should allow an Admin User with VALID token get a NON-EXISTENT Role',
-    (done) => {
+    it('should not allow an Admin User get a non existing Role', (done) => {
       server.get(`/roles/${newRoleId + 90}`)
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(404);
+        should(res.body.message)
+        .equal(`Role with id: ${newRoleId + 90} not found.`);
         done();
       });
     });
   });
 
   describe('Delete Roles', () => {
-    it('should NOT allow a Non-Admin User with VALID token to delete a role',
-    (done) => {
+    it('should NOT allow a Non-Admin User to delete a role', (done) => {
       server.delete(`/roles/${newRoleId}`)
       .set({ 'x-access-token': regularUserToken })
       .end((error, res) => {
-        should(res.status).equal(403);
+        res.status.should.equal(401);
+        res.body.message.should.equal('You are not authorized!');
         done();
       });
     });
 
-    it('should allow an Admin User with VALID token delete a Role',
+    it('should allow an Admin User delete a Role',
     (done) => {
       server.delete(`/roles/${newRoleId}`)
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(200);
+        res.body.message.should.equal('Role deleted successfully.');
         done();
       });
     });
 
     it(`should return not found 
-    when an Admin User tries to delete a NON-EXISTENT Role`,
-    (done) => {
+    when an Admin User tries to delete a non existing Role`, (done) => {
       server.delete(`/roles/${newRoleId + 90}`)
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(404);
+        res.body.message.should
+        .equal(`Role with id: ${newRoleId + 90} not found.`);
         done();
       });
     });

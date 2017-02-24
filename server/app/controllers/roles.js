@@ -1,6 +1,6 @@
 import { Role } from '../../models';
 
-module.exports = {
+export default {
   /**
    * Get all roles
    * @param {Object} req request object

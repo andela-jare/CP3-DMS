@@ -27,7 +27,9 @@ app.get('*', (req, res) => res.status(200).send({
   message: 'Welcome to Document management',
 }));
 
-httpServer.listen(port, () => console.log(`Server started at port ${port}`));
+if (!module.parent) {
+  httpServer.listen(port, () => console.log(`Server started at port ${port}`));
+}
 
 // export app for testing
 export default app;

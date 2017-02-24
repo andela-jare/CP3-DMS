@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../../models';
 
-module.exports = {
+export default {
   /**
    * Create a new user
    * @param {Object} req - Request object
@@ -10,7 +10,7 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   create(req, res) {
-    return User.create(req.body)
+    User.create(req.body)
     .then((user) => {
       const token = jwt.sign({
         message: 'signedUp',
@@ -35,7 +35,7 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   login(req, res) {
-    return User.findOne({
+    User.findOne({
       where: {
         username: req.body.username
       }
@@ -83,11 +83,19 @@ module.exports = {
    * @returns {Object} Response object
    */
   allUsers(req, res) {
-    return User.findAll()
+    User.findAll({
+      attributes: [
+        'id',
+        'username',
+        'firstName',
+        'lastName',
+        'email',
+        'roleId',
+        'createdAt',
+        'updatedAt'
+      ]
+    })
     .then((users) => {
-      if (req.decoded.roleId !== 1) {
-        return res.status(401).send({ error: 'You are not authorized!' });
-      }
       res.status(200).send(users);
     })
     .catch(error => res.status(400).send({ error }));
@@ -100,16 +108,21 @@ module.exports = {
   * @returns {Object} - Returns response object
   */
   findUser(req, res) {
-    return User.findById(req.params.id)
+    User.findById(req.params.id, {
+      attributes: [
+        'id',
+        'username',
+        'firstName',
+        'lastName',
+        'email',
+        'roleId',
+        'createdAt',
+        'updatedAt'
+      ]
+    })
       .then((user) => {
-        if (!user) return res.status(404).send({ message: 'User not found' });
-        res.status(200).send({
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          userId: user.id
-        });
+        if (!user) return res.status(404).send({ message: 'User not found.' });
+        res.status(200).send(user);
       })
       .catch(error => res.status(400).send({ error }));
   },
@@ -121,16 +134,34 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   update(req, res) {
-    return User.findById(req.params.id)
+    const userUpdateFields = [
+      'username',
+      'firstName',
+      'lastName',
+      'email',
+      'password'
+    ];
+    let query = {};
+    Object.keys(req.body).forEach((prop) => {
+      if (userUpdateFields.includes(prop)) {
+        query[prop] = req.body[prop];
+      }
+    });
+    User.findById(req.params.id)
       .then((user) => {
         if (!user) {
-          return res.status(404).send({ error: 'User Not found' });
+          return res.status(404).send({ message: 'User not found.' });
         } else if (Number(req.params.id) !== req.decoded.userId
-        || req.decoded.roleId === 1
+        && req.decoded.roleId !== 1
         ) {
-          return res.status(401).send({ error: 'Unauthorized user' });
+          return res.status(401).send({ message: 'You are not authorized.' });
         }
-        user.update(req.body, {
+        if (req.decoded.roleId === 1) {
+          query = {
+            roleId: req.body.roleId,
+          };
+        }
+        user.update(query, {
           where: {
             id: req.params.id,
           }
@@ -138,9 +169,9 @@ module.exports = {
         .then((found) => {
           res.status(200).send({ found });
         })
-        .catch(error => res.status(404).send({ error }));
+        .catch(error => res.status(400).send({ error }));
       })
-      .catch(error => res.status(404).send({ error }));
+      .catch(error => res.status(400).send({ error }));
   },
 
   /**
@@ -150,7 +181,7 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   destroy(req, res) {
-    return User.findById(req.params.id)
+    User.findById(req.params.id)
       .then((user) => {
         if (!user) {
           return res.status(404).send({ error: 'User does not exist' });
@@ -160,8 +191,7 @@ module.exports = {
         }
         user.destroy()
         .then(() => res.status(200).send({
-          message: 'User deleted successfully',
-          userId: user.id
+          message: 'User deleted successfully.'
         }));
       });
   }

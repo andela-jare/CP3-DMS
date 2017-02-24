@@ -1,6 +1,6 @@
 import { Document } from '../../models';
 
-module.exports = {
+export default {
 
   /**
    * Create a new document
@@ -9,7 +9,7 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   create(req, res) {
-    return Document.create({
+    Document.create({
       title: req.body.title,
       content: req.body.content,
       access: req.body.access,
@@ -26,10 +26,13 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   getDocument(req, res) {
-    return Document.findById(req.params.id)
+    Document.findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404).send({ error: 'Document Not found.' });
+          return res.status(404).send({
+            message: 'Document Not found.',
+            status: false
+          });
         }
         if (document.access === 'public' ||
         document.ownerId === req.decoded.userId
@@ -37,7 +40,7 @@ module.exports = {
           return res.status(200).send({ document });
         }
 
-        res.status(403).send({ message: 'You are unauthorized.' });
+        res.status(401).send({ message: 'You are unauthorized.' });
       });
   },
 
@@ -58,9 +61,14 @@ module.exports = {
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
+    if (req.query.limit <= 0 || req.query.limit > 10) {
+      return res.status(400).send({
+        message: 'Please enter a valid number within the range 1 - 10.'
+      });
+    }
     query.limit = req.query.limit ? req.query.limit : 10;
     query.offset = req.query.offset ? req.query.offset : 0;
-    return Document.findAll(query)
+    Document.findAll(query)
     .then((document) => {
       res.status(200).send({ document });
     });
@@ -73,18 +81,18 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   update(req, res) {
-    return Document.findById(req.params.id)
+    Document.findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404).send({ error: 'Document Not found.' });
+          return res.status(404).send({ message: 'Document Not found.' });
         }
         if (document.ownerId !== req.decoded.userId) {
-          return res.status(403).send({
+          return res.status(401).send({
             message: 'You are not allowed to edit this document.'
           });
         }
         document.update(req.body)
-        .then(doc => res.status(200).send(doc));
+        .then(updatedDocument => res.status(200).send(updatedDocument));
       });
   },
 
@@ -95,15 +103,15 @@ module.exports = {
    * @returns {Object} - Returns response object
    */
   destroy(req, res) {
-    return Document.findById(req.params.id)
+    Document.findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404).send({ error: 'Document Not found' });
+          return res.status(404).send({ message: 'Document Not found' });
         }
         if (document.ownerId !== req.decoded.userId &&
         req.decoded.roleId !== 1
         ) {
-          return res.status(403).send({
+          return res.status(401).send({
             message: 'This document does not belong to you.'
           });
         }
@@ -122,7 +130,7 @@ module.exports = {
    */
   usersDocument(req, res) {
     const id = Number(req.params.id);
-    return Document.findAll({
+    Document.findAll({
       where: {
         ownerId: id
       }
@@ -131,7 +139,7 @@ module.exports = {
       if (req.decoded.userId === id || req.decoded.roleId === 1) {
         return res.status(200).send({ documents });
       }
-      res.status(403).send({ error: 'Access denied!' });
+      res.status(401).send({ message: 'Access denied!' });
     });
   },
   /**
@@ -176,9 +184,14 @@ module.exports = {
       } };
     }
     query.order = '"createdAt" DESC';
+    if (req.query.limit <= 0 || req.query.limit > 10) {
+      return res.status(400).send({
+        message: 'Please enter a valid number within the range 1 - 10.'
+      });
+    }
     query.limit = req.query.limit ? +req.query.limit : 10;
     query.offset = req.query.offset ? +req.query.offset : 0;
-    return Document.findAll(query)
+    Document.findAll(query)
     .then(docs => res.status(200).send(docs))
     .catch(error => res.status(400).send({ error }));
   }
