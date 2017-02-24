@@ -1,5 +1,5 @@
 import { Document } from '../../models';
-import Authenticate from '../middleware/authenticate';
+import limitOffsetHelper from '../middleware/helper';
 
 export default {
 
@@ -62,8 +62,18 @@ export default {
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
-    Authenticate.verifyLimitOffset(res, req.query.limit, 1);
-    Authenticate.verifyLimitOffset(res, req.query.offset, 0);
+    const limitSuccess = limitOffsetHelper(req.query.limit, 1);
+    const offsetSuccess = limitOffsetHelper(req.query.offset, 0);
+    if (!limitSuccess) {
+      return res.status(400).send({
+        message: 'Please enter a valid number within the range 1 - 10.'
+      });
+    }
+    if (!offsetSuccess) {
+      return res.status(400).send({
+        message: 'Please enter a valid number within the range 1 - 10.'
+      });
+    }
     query.limit = req.query.limit ? req.query.limit : 10;
     query.offset = req.query.offset ? req.query.offset : 0;
     Document.findAll(query)
@@ -182,8 +192,18 @@ export default {
       } };
     }
     query.order = '"createdAt" DESC';
-    Authenticate.verifyLimitOffset(res, req.query.limit, 1);
-    Authenticate.verifyLimitOffset(res, req.query.offset, 0);
+    const limitSuccess = limitOffsetHelper(req.query.limit, 1);
+    const offsetSuccess = limitOffsetHelper(req.query.offset, 0);
+    if (!limitSuccess) {
+      return res.status(400).send({
+        message: 'Please enter a valid number within the range 1 - 10.'
+      });
+    }
+    if (!offsetSuccess) {
+      return res.status(400).send({
+        message: 'Please enter a valid number within the range 1 - 10.'
+      });
+    }
     query.limit = req.query.limit ? +req.query.limit : 10;
     query.offset = req.query.offset ? +req.query.offset : 0;
     Document.findAll(query)

@@ -47,13 +47,5 @@ class Authenticate {
         }
       });
   }
-
-  static verifyLimitOffset(res, query, min) {
-    if (query < min || query > 10) {
-      return res.status(400).send({
-        message: 'Please enter a valid number within the range 1 - 10.'
-      });
-    }
-  }
 }
 export default Authenticate;
