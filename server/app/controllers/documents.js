@@ -1,4 +1,5 @@
 import { Document } from '../../models';
+import Authenticate from '../middleware/authenticate';
 
 export default {
 
@@ -61,11 +62,8 @@ export default {
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
-    if (req.query.limit <= 0 || req.query.limit > 10) {
-      return res.status(400).send({
-        message: 'Please enter a valid number within the range 1 - 10.'
-      });
-    }
+    Authenticate.verifyLimitOffset(res, req.query.limit, 1);
+    Authenticate.verifyLimitOffset(res, req.query.offset, 0);
     query.limit = req.query.limit ? req.query.limit : 10;
     query.offset = req.query.offset ? req.query.offset : 0;
     Document.findAll(query)
@@ -184,11 +182,8 @@ export default {
       } };
     }
     query.order = '"createdAt" DESC';
-    if (req.query.limit <= 0 || req.query.limit > 10) {
-      return res.status(400).send({
-        message: 'Please enter a valid number within the range 1 - 10.'
-      });
-    }
+    Authenticate.verifyLimitOffset(res, req.query.limit, 1);
+    Authenticate.verifyLimitOffset(res, req.query.offset, 0);
     query.limit = req.query.limit ? +req.query.limit : 10;
     query.offset = req.query.offset ? +req.query.offset : 0;
     Document.findAll(query)

@@ -250,6 +250,7 @@ describe('Users', () => {
   describe('logout', () => {
     it('should be able to logout', (done) => {
       server.get('/logout')
+      .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.message.should.equal('You have successfully logged out');

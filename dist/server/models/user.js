@@ -1,7 +1,17 @@
-import bcrypt from 'bcrypt';
+'use strict';
 
-export default (sequelize, DataTypes) => {
-  const User = sequelize.define('User', {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _bcrypt = require('bcrypt');
+
+var _bcrypt2 = _interopRequireDefault(_bcrypt);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = function (sequelize, DataTypes) {
+  var User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
       unique: true,
@@ -45,10 +55,10 @@ export default (sequelize, DataTypes) => {
       validate: {
         notEmpty: true
       }
-    },
+    }
   }, {
     classMethods: {
-      associate(models) {
+      associate: function associate(models) {
         User.belongsTo(models.Role, {
           onDelete: 'CASCADE',
           foreignKey: 'roleId'
@@ -65,15 +75,15 @@ export default (sequelize, DataTypes) => {
        * @method
        * @returns {void} no return
       */
-      hashPassword() {
-        this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8));
+      hashPassword: function hashPassword() {
+        this.password = _bcrypt2.default.hashSync(this.password, _bcrypt2.default.genSaltSync(8));
       }
     },
     hooks: {
-      beforeCreate(user) {
+      beforeCreate: function beforeCreate(user) {
         user.hashPassword();
       },
-      beforeUpdate(user) {
+      beforeUpdate: function beforeUpdate(user) {
         user.hashPassword();
       }
     }

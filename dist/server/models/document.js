@@ -1,5 +1,11 @@
-export default (sequelize, DataTypes) => {
-  const Document = sequelize.define('Document', {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+exports.default = function (sequelize, DataTypes) {
+  var Document = sequelize.define('Document', {
     title: {
       allowNull: false,
       type: DataTypes.STRING
@@ -21,7 +27,7 @@ export default (sequelize, DataTypes) => {
     }
   }, {
     classMethods: {
-      associate(models) {
+      associate: function associate(models) {
         Document.belongsTo(models.User, {
           foreignKey: 'ownerId',
           onDelete: 'CASCADE'

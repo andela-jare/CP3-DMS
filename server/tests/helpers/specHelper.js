@@ -144,18 +144,23 @@ module.exports = {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph()
   },
+
   newRole1: {
     title: 'rookie'
   },
+
   updateRole1: {
     title: 'rookie update'
   },
+
   duplicateRole1: {
     title: 'rookie'
   },
+
   newRole2: {
     title: 'amateur'
   },
+
   newRole3: {
     title: 'professional'
   }
