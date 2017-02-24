@@ -1,18 +1,10 @@
 {
   "development": {
-    "username": "postgres",
-    "password": "password",
-    "database": "docman",
-    "host": "127.0.0.1",
-    "port": 5432,
+    "use_env_variable": "DB_DEV_URL",
     "dialect": "postgres"
   },
   "test": {
-    "username": "postgres",
-    "password": "password",
-    "database": "doc_test",
-    "host": "127.0.0.1",
-    "port": 5432,
+    "use_env_variable": "DB_TEST_URL",
     "dialect": "postgres"
   },
   "production": {
