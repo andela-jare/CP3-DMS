@@ -139,7 +139,7 @@ describe('Users', () => {
         .set({ 'x-access-token': token })
         .expect(401)
         .end((err, res) => {
-          res.status.should.equal(401);
+          res.status.should.equal(403);
           should(res.body).have.property('message');
           should(res.body.message).equal('You are not authorized.');
           done();
@@ -148,9 +148,9 @@ describe('Users', () => {
 
     it('should return unauthorized for a user not logged in.', (done) => {
       server.put(`/users/${userId}`)
-        .expect(403)
+        .expect(401)
         .end((err, res) => {
-          res.status.should.equal(403);
+          res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
           done();
@@ -178,7 +178,7 @@ describe('Users', () => {
     it('should deny access to a user not logged in ', (done) => {
       server.get('/users')
         .end((err, res) => {
-          res.status.should.equal(403);
+          res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
           done();
@@ -214,6 +214,16 @@ describe('Users', () => {
   });
 
   describe('Delete user', () => {
+    it('should allow a regular user delete other user\'s account', (done) => {
+      server.delete(`/users/${adminId}`)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(403);
+          res.body.message.should.equal('You are not authorized!');
+          done();
+        });
+    });
+
     it('should be able to delete own account', (done) => {
       server.delete(`/users/${userId}`)
         .set({ 'x-access-token': token })
@@ -241,9 +251,10 @@ describe('Users', () => {
         .expect(404, done);
     });
 
-    it('should return forbidden status for invalid access', (done) => {
+    it('should return not authenticated status for user not logged in.',
+    (done) => {
       server.delete(`/users/${userId}`)
-        .expect(403, done);
+        .expect(401, done);
     });
   });
 

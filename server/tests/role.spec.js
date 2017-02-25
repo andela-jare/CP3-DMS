@@ -58,13 +58,13 @@ describe('Roles:', () => {
       });
     });
 
-    it('should NOT allow a NON-Admin User create a Role',
+    it('should NOT allow a NON-Admin user create a Role',
     (done) => {
       server.post('/roles')
       .set({ 'x-access-token': regularUserToken })
       .send(testData.newRole3)
       .end((error, res) => {
-        res.status.should.equal(401);
+        res.status.should.equal(403);
         res.body.message.should.equal('You are not authorized!');
         done();
       });
@@ -109,18 +109,18 @@ describe('Roles:', () => {
       });
     });
 
-    it('should NOT allow a NON-Admin User update a Role', (done) => {
+    it('should NOT allow a NON Admin user update a Role', (done) => {
       server.put(`/roles/${newRoleId}`)
       .set({ 'x-access-token': regularUserToken })
       .send(testData.updateRole1)
       .end((error, res) => {
-        should(res.status).equal(401);
+        should(res.status).equal(403);
         done();
       });
     });
   });
 
-  describe('Get', () => {
+  describe('Get role', () => {
     it('should allow an Admin User with VALID token get all Roles',
     (done) => {
       server.get('/roles')
@@ -162,7 +162,7 @@ describe('Roles:', () => {
       server.get('/roles')
       .set({ 'x-access-token': regularUserToken })
       .end((error, res) => {
-        should(res.status).equal(401);
+        should(res.status).equal(403);
         done();
       });
     });
@@ -191,11 +191,11 @@ describe('Roles:', () => {
   });
 
   describe('Delete Roles', () => {
-    it('should NOT allow a Non-Admin User to delete a role', (done) => {
+    it('should NOT allow a non Admin user to delete a role', (done) => {
       server.delete(`/roles/${newRoleId}`)
       .set({ 'x-access-token': regularUserToken })
       .end((error, res) => {
-        res.status.should.equal(401);
+        res.status.should.equal(403);
         res.body.message.should.equal('You are not authorized!');
         done();
       });

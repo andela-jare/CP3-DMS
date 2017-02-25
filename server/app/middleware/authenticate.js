@@ -23,7 +23,7 @@ class Authenticate {
         next();
       });
     } else {
-      res.status(403).send({
+      res.status(401).send({
         message: 'Authentication is required. No token provided.'
       });
     }
@@ -43,7 +43,7 @@ class Authenticate {
         if (role.title === 'admin') {
           next();
         } else {
-          return res.status(401).send({ message: 'You are not authorized!' });
+          return res.status(403).send({ message: 'You are not authorized!' });
         }
       });
   }

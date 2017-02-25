@@ -58,7 +58,7 @@ describe('Document Api', () => {
       server.post('/documents')
       .send(testData.document2)
         .end((err, res) => {
-          res.status.should.equal(403);
+          res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
           done();
@@ -104,7 +104,7 @@ describe('Document Api', () => {
       server.get(`/documents/${documentId2}`)
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
-          res.status.should.equal(401);
+          res.status.should.equal(403);
           res.body.message.should.equal('You are unauthorized.');
           done();
         });
@@ -137,7 +137,7 @@ describe('Document Api', () => {
     it('should return error message for a user not logged in', (done) => {
       server.get('/documents')
         .end((err, res) => {
-          res.status.should.equal(403);
+          res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
           done();
@@ -215,7 +215,7 @@ describe('Document Api', () => {
       server.put(`/documents/${documentId1}`)
       .send(updateDocument)
         .end((err, res) => {
-          res.status.should.equal(403);
+          res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
           done();
@@ -228,7 +228,7 @@ describe('Document Api', () => {
       .send(updateDocument2)
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
-          res.status.should.equal(401);
+          res.status.should.equal(403);
           res.body.message.should
           .equal('You are not allowed to edit this document.');
           done();
@@ -265,7 +265,7 @@ describe('Document Api', () => {
       server.get(`/users/${userId}/documents`)
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
-          res.status.should.equal(401);
+          res.status.should.equal(403);
           res.body.message.should.equal('Access denied!');
           done();
         });
@@ -274,7 +274,7 @@ describe('Document Api', () => {
     it('should return error message if user is not logged in.', (done) => {
       server.get(`/users/${userId}/documents`)
         .end((err, res) => {
-          res.status.should.equal(403);
+          res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
           done();
@@ -345,7 +345,7 @@ describe('Document Api', () => {
       server.delete(`/documents/${documentId2}`)
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
-          res.status.should.equal(401);
+          res.status.should.equal(403);
           res.body.message.should
           .equal('This document does not belong to you.');
           done();
@@ -365,7 +365,7 @@ describe('Document Api', () => {
     it('should return error message if user is not logged in.', (done) => {
       server.delete(`/documents/${documentId1}`)
         .end((err, res) => {
-          res.status.should.equal(403);
+          res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
           done();

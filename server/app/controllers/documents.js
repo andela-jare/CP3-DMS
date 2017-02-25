@@ -41,7 +41,7 @@ export default {
           return res.status(200).send({ document });
         }
 
-        res.status(401).send({ message: 'You are unauthorized.' });
+        res.status(403).send({ message: 'You are unauthorized.' });
       });
   },
 
@@ -95,7 +95,7 @@ export default {
           return res.status(404).send({ message: 'Document Not found.' });
         }
         if (document.ownerId !== req.decoded.userId) {
-          return res.status(401).send({
+          return res.status(403).send({
             message: 'You are not allowed to edit this document.'
           });
         }
@@ -119,7 +119,7 @@ export default {
         if (document.ownerId !== req.decoded.userId &&
         req.decoded.roleId !== 1
         ) {
-          return res.status(401).send({
+          return res.status(403).send({
             message: 'This document does not belong to you.'
           });
         }
@@ -147,7 +147,7 @@ export default {
       if (req.decoded.userId === id || req.decoded.roleId === 1) {
         return res.status(200).send({ documents });
       }
-      res.status(401).send({ message: 'Access denied!' });
+      res.status(403).send({ message: 'Access denied!' });
     });
   },
   /**

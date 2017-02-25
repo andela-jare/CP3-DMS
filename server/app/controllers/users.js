@@ -154,7 +154,7 @@ export default {
         } else if (Number(req.params.id) !== req.decoded.userId
         && req.decoded.roleId !== 1
         ) {
-          return res.status(401).send({ message: 'You are not authorized.' });
+          return res.status(403).send({ message: 'You are not authorized.' });
         }
         if (req.decoded.roleId === 1) {
           query = {
@@ -187,7 +187,7 @@ export default {
           return res.status(404).send({ error: 'User does not exist' });
         }
         if (req.decoded.roleId !== 1 && req.decoded.userId !== user.id) {
-          return res.status(401).send({ error: 'You are not authorized!' });
+          return res.status(403).send({ message: 'You are not authorized!' });
         }
         user.destroy()
         .then(() => res.status(200).send({
