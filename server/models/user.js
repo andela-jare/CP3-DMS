@@ -59,10 +59,6 @@ export default (sequelize, DataTypes) => {
             throw new Error('Password must be at least 6 characters.');
           }
         },
-        // is: {
-        //   args: /^[a-z0-9-@$!%*#?&._]+$/i,
-        //   msg: 'Password can only contain alphanumeric and special characters'
-        // }
       }
     },
     roleId: {

@@ -1,12 +1,26 @@
 import supertest from 'supertest';
 import should from 'should';
 import app from '../../server';
+import db from '../models';
 import testData from './helpers/specHelper';
 
 const server = supertest.agent(app);
 let token, adminToken, userId, userId2, adminId;
 
 describe('Users', () => {
+  before((done) => {
+    db.User.create(testData.adminUser)
+    .then(() => {
+      server.post('/login')
+      .send(testData.adminUser6)
+      .end((err, res) => {
+        adminToken = res.body.token;
+        adminId = res.body.userId;
+        done();
+      });
+    });
+  });
+
   describe('on signup', () => {
     it('should create a new user with valid attributes', (done) => {
       server.post('/users')
@@ -18,16 +32,6 @@ describe('Users', () => {
           should(res.body).have.property('userId');
           token = res.body.token;
           userId = res.body.userId;
-        });
-      server.post('/users')
-      .send(testData.adminUser)
-        .expect('Content-Type', /json/)
-        .expect(201)
-        .end((err, res) => {
-          should(res.body).have.property('token');
-          should(res.body).have.property('userId');
-          adminToken = res.body.token;
-          adminId = res.body.userId;
         });
       server.post('/users')
       .send(testData.regularUser2)

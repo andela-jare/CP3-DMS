@@ -160,6 +160,14 @@ module.exports = {
     content: faker.lorem.paragraph()
   },
 
+  adminRole: {
+    title: 'admin'
+  },
+
+  regularRole: {
+    title: 'regular'
+  },
+
   newRole1: {
     title: 'rookie'
   },

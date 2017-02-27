@@ -1,5 +1,5 @@
 import { Document } from '../../models';
-import limitOffsetHelper from '../middleware/helper';
+import helper from '../middleware/helper';
 
 export default {
 
@@ -64,8 +64,8 @@ export default {
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
-    const limitSuccess = limitOffsetHelper(req.query.limit, 1);
-    const offsetSuccess = limitOffsetHelper(req.query.offset, 0);
+    const limitSuccess = helper.limitOffsetHelper(req.query.limit, 1);
+    const offsetSuccess = helper.limitOffsetHelper(req.query.offset, 0);
     if (!limitSuccess) {
       return res.status(400).send({
         message: 'Enter a valid number for limit within the range 1 - 10.'
@@ -198,8 +198,8 @@ export default {
       } };
     }
     query.order = '"createdAt" DESC';
-    const limitSuccess = limitOffsetHelper(req.query.limit, 1);
-    const offsetSuccess = limitOffsetHelper(req.query.offset, 0);
+    const limitSuccess = helper.limitOffsetHelper(req.query.limit, 1);
+    const offsetSuccess = helper.limitOffsetHelper(req.query.offset, 0);
     if (!limitSuccess) {
       return res.status(400).send({
         message: 'Please enter a valid number within the range 1 - 10.'

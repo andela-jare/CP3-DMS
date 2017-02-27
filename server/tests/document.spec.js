@@ -2,29 +2,39 @@ import supertest from 'supertest';
 import should from 'should';
 import app from '../../server';
 import testData from './helpers/specHelper';
+import db from '../models';
 
 const server = supertest.agent(app);
 let token, adminToken, user4Token, userId, documentId1, documentId2;
 
 describe('Document Api', () => {
   before((done) => {
-    server.post('/users')
+    db.User.create(testData.regularUser3)
+    .then(() => {
+      server.post('/login')
       .send(testData.regularUser3)
       .end((err, res) => {
         token = res.body.token;
         userId = res.body.userId;
       });
-    server.post('/users')
+    });
+    db.User.create(testData.adminUser3)
+    .then(() => {
+      server.post('/login')
       .send(testData.adminUser3)
       .end((err, res) => {
         adminToken = res.body.token;
       });
-    server.post('/users')
+    });
+    db.User.create(testData.regularUser4)
+    .then(() => {
+      server.post('/login')
       .send(testData.regularUser4)
       .end((err, res) => {
         user4Token = res.body.token;
         done();
       });
+    });
   });
 
   describe('Create', () => {

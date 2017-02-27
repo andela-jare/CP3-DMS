@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../../models';
+import helper from '../middleware/helper';
 
 export default {
   /**
@@ -10,7 +11,8 @@ export default {
    * @returns {Object} - Returns response object
    */
   create(req, res) {
-    User.create(req.body)
+    const query = helper.usersFields(req.body);
+    User.create(query)
     .then((user) => {
       const token = jwt.sign({
         message: 'signedUp',
@@ -140,19 +142,7 @@ export default {
    * @returns {Object} - Returns response object
    */
   update(req, res) {
-    const userUpdateFields = [
-      'username',
-      'firstName',
-      'lastName',
-      'email',
-      'password'
-    ];
-    let query = {};
-    Object.keys(req.body).forEach((prop) => {
-      if (userUpdateFields.includes(prop)) {
-        query[prop] = req.body[prop];
-      }
-    });
+    let query = helper.usersFields(req.body);
     User.findById(req.params.id)
       .then((user) => {
         if (!user) {

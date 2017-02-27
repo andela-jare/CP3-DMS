@@ -5,9 +5,27 @@
   * @param{Number} min - A minimum number to check agsint
   * @return{Boolean} - returns true or false.
   */
-export default function limitOffsetHelper(query, min) {
-  if (query < min || query > 10) {
-    return false;
+export default {
+  limitOffsetHelper(query, min) {
+    if (query < min || query > 10) {
+      return false;
+    }
+    return true;
+  },
+  usersFields(fields) {
+    const userUpdateFields = [
+      'username',
+      'firstName',
+      'lastName',
+      'email',
+      'password'
+    ];
+    const query = {};
+    Object.keys(fields).forEach((prop) => {
+      if (userUpdateFields.includes(prop)) {
+        query[prop] = fields[prop];
+      }
+    });
+    return query;
   }
-  return true;
-}
+};

@@ -1,6 +1,7 @@
 import supertest from 'supertest';
 import should from 'should';
 import app from '../../server';
+import db from '../models';
 import testData from './helpers/specHelper';
 
 const server = supertest.agent(app);
@@ -9,13 +10,19 @@ let adminToken, regularUserToken, newRoleId, newRoleTitle;
 
 describe('Roles:', () => {
   before((done) => {
-    server.post('/users')
-    .send(testData.adminUser6)
-    .end((error, res) => {
-      adminToken = res.body.token;
-      server.post('/users')
+    db.User.create(testData.adminUser6)
+    .then(() => {
+      server.post('/login')
+      .send(testData.adminUser6)
+      .end((err, res) => {
+        adminToken = res.body.token;
+      });
+    });
+    db.User.create(testData.regularUser6)
+    .then(() => {
+      server.post('/login')
       .send(testData.regularUser6)
-      .end((error1, res) => {
+      .end((err, res) => {
         regularUserToken = res.body.token;
         done();
       });
