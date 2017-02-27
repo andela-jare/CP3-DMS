@@ -5,7 +5,7 @@ import db from '../models';
 import testData from './helpers/specHelper';
 
 const server = supertest.agent(app);
-let token, adminToken, userId, userId2, adminId;
+let token, adminToken, userToken7, userId, userId2, userId7, adminId;
 
 describe('Users', () => {
   before((done) => {
@@ -41,6 +41,16 @@ describe('Users', () => {
           should(res.body).have.property('token');
           should(res.body).have.property('userId');
           userId2 = res.body.userId;
+        });
+      server.post('/users')
+      .send(testData.regularUser7)
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .end((err, res) => {
+          should(res.body).have.property('token');
+          should(res.body).have.property('userId');
+          userId7 = res.body.userId;
+          userToken7 = res.body.token;
           done();
         });
     });
@@ -173,10 +183,10 @@ describe('Users', () => {
         });
     });
 
-    it(`should not authorized message if a regular user is trying to update 
-    another user`, (done) => {
+    it(`should return not authorized message if a regular user is trying to 
+    update another user`, (done) => {
       server.put(`/users/${adminId}`)
-        .set({ 'x-access-token': token })
+        .set({ 'x-access-token': userToken7 })
         .send(newAttributes)
         .expect(401)
         .end((err, res) => {
@@ -256,9 +266,10 @@ describe('Users', () => {
   });
 
   describe('Delete user', () => {
-    it('should allow a regular user delete other user\'s account', (done) => {
+    it('should not allow a regular user delete other user\'s account',
+    (done) => {
       server.delete(`/users/${adminId}`)
-        .set({ 'x-access-token': token })
+        .set({ 'x-access-token': userToken7 })
         .end((err, res) => {
           res.status.should.equal(403);
           res.body.message.should.equal('You are not authorized!');
@@ -266,9 +277,19 @@ describe('Users', () => {
         });
     });
 
-    it('should be able to delete own account', (done) => {
+    it('should not allow an admin user to be deleted', (done) => {
       server.delete(`/users/${userId}`)
-        .set({ 'x-access-token': token })
+        .set({ 'x-access-token': adminToken })
+        .end((err, res) => {
+          res.status.should.equal(403);
+          res.body.message.should.equal('You can not delete an admin!');
+          done();
+        });
+    });
+
+    it('should be able to delete own account', (done) => {
+      server.delete(`/users/${userId7}`)
+        .set({ 'x-access-token': userToken7 })
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.message.should.equal('User deleted successfully.');

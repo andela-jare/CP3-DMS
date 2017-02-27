@@ -94,16 +94,7 @@ export default {
    */
   allUsers(req, res) {
     User.findAll({
-      attributes: [
-        'id',
-        'username',
-        'firstName',
-        'lastName',
-        'email',
-        'roleId',
-        'createdAt',
-        'updatedAt'
-      ]
+      attributes: helper.findUsersAttributes()
     })
     .then((users) => {
       res.status(200).send(users);
@@ -118,16 +109,7 @@ export default {
   */
   findUser(req, res) {
     User.findById(req.params.id, {
-      attributes: [
-        'id',
-        'username',
-        'firstName',
-        'lastName',
-        'email',
-        'roleId',
-        'createdAt',
-        'updatedAt'
-      ]
+      attributes: helper.findUsersAttributes()
     })
     .then((user) => {
       if (!user) return res.status(404).send({ message: 'User not found.' });
@@ -147,12 +129,10 @@ export default {
       .then((user) => {
         if (!user) {
           return res.status(404).send({ message: 'User not found.' });
-        } else if (Number(req.params.id) !== req.decoded.userId
-        && req.decoded.roleId !== 1
-        ) {
+        } else if (helper.userOrAdmin(req.params.id, req)) {
           return res.status(403).send({ message: 'You are not authorized.' });
         }
-        if (req.decoded.roleId === 1) {
+        if (helper.isAdmin(req.decoded.roleId)) {
           query = {
             roleId: req.body.roleId,
           };
@@ -180,8 +160,13 @@ export default {
         if (!user) {
           return res.status(404).send({ error: 'User does not exist' });
         }
-        if (req.decoded.roleId !== 1 && req.decoded.userId !== user.id) {
+        if (helper.userOrAdmin(req.params.id, req)) {
           return res.status(403).send({ message: 'You are not authorized!' });
+        }
+        if (helper.isAdmin(user.roleId)) {
+          return res.status(403).send({
+            message: 'You can not delete an admin!'
+          });
         }
         user.destroy()
         .then(() => res.status(200).send({

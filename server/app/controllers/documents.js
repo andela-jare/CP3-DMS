@@ -37,9 +37,7 @@ export default {
             status: false
           });
         }
-        if (document.access === 'public' ||
-        document.ownerId === req.decoded.userId
-        || req.decoded.roleId === 1) {
+        if (helper.documentAccess(document, req)) {
           return res.status(200).send({ document });
         }
 
@@ -68,12 +66,12 @@ export default {
     const offsetSuccess = helper.limitOffsetHelper(req.query.offset, 0);
     if (!limitSuccess) {
       return res.status(400).send({
-        message: 'Enter a valid number for limit within the range 1 - 10.'
+        message: helper.limitOffsetMessage('limit')
       });
     }
     if (!offsetSuccess) {
       return res.status(400).send({
-        message: 'Enter a valid number for offset within the range 1 - 10.'
+        message: helper.limitOffsetMessage('offset')
       });
     }
     query.limit = req.query.limit ? req.query.limit : 10;
@@ -96,7 +94,7 @@ export default {
         if (!document) {
           return res.status(404).send({ message: 'Document Not found.' });
         }
-        if (document.ownerId !== req.decoded.userId) {
+        if (!helper.isOwner(document, req)) {
           return res.status(403).send({
             message: 'You are not allowed to edit this document.'
           });
@@ -118,9 +116,7 @@ export default {
         if (!document) {
           return res.status(404).send({ message: 'Document Not found' });
         }
-        if (document.ownerId !== req.decoded.userId &&
-        req.decoded.roleId !== 1
-        ) {
+        if (helper.userOrAdmin(document.ownerId, req)) {
           return res.status(403).send({
             message: 'This document does not belong to you.'
           });
@@ -145,7 +141,7 @@ export default {
         ownerId: id
       }
     };
-    if (req.decoded.userId !== id || req.decoded.roleId === 1) {
+    if (helper.norUserAdmin(req)) {
       query = {
         where: {
           ownerId: id,
@@ -185,7 +181,7 @@ export default {
       }
     };
 
-    if (req.decoded.roleId === 1) {
+    if (helper.isAdmin(req.decoded.roleId)) {
       query = { where: {
         $or: {
           title: {

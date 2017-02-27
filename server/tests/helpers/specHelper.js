@@ -106,6 +106,14 @@ module.exports = {
     password: faker.internet.password(),
   },
 
+  regularUser7: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  },
+
   badUser: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),

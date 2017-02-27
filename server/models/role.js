@@ -5,9 +5,6 @@ export default (sequelize, DataTypes) => {
       unique: true,
       allowNull: false
     }
-  }, {
-    classMethods: {
-    }
   });
   return Role;
 };
