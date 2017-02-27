@@ -8,8 +8,8 @@ export default {
    * @returns {Object} - Returns response object
    */
   index(req, res) {
-    return Role.findAll()
-      .then(roles => res.send(roles));
+    Role.findAll()
+    .then(roles => res.send(roles));
   },
 
   /**
@@ -19,11 +19,9 @@ export default {
    * @returns {Object} - Returns response object
    */
   create(req, res) {
-    return Role.create(req.body)
-      .then(role =>
-        res.status(201).send(role)
-        )
-      .catch(error => res.status(400).send(error));
+    Role.create(req.body)
+    .then(role => res.status(201).send(role))
+    .catch(error => res.status(400).send({ message: error.errors[0].message }));
   },
 
    /**
@@ -33,7 +31,7 @@ export default {
    * @returns {Object} - Returns response object
    */
   find(req, res) {
-    return Role.findById(req.params.id)
+    Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
           return res.status(404).send({
@@ -51,7 +49,7 @@ export default {
    * @returns {Object} - Returns response object
    */
   update(req, res) {
-    return Role.findById(req.params.id)
+    Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
           return res.status(404).send({
@@ -71,11 +69,12 @@ export default {
    * @returns {Object} - Returns response object
    */
   destroy(req, res) {
-    return Role.findById(req.params.id)
+    Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
           return res.status(404).send({
-            message: `Role with id: ${req.params.id} not found.`
+            message: `Role with id: ${req.params.id} not found.`,
+            status: false
           });
         }
         role.destroy()

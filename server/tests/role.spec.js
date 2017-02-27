@@ -42,7 +42,8 @@ describe('Roles:', () => {
       .set({ 'x-access-token': adminToken })
       .send(testData.newRole1)
       .end((error, res) => {
-        should(res.status).equal(400);
+        res.status.should.equal(400);
+        res.body.message.should.equal('title must be unique');
         done();
       });
     });

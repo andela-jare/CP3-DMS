@@ -90,19 +90,34 @@ module.exports = {
     password: faker.internet.password()
   },
 
+  regularUser5: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  },
+
   regularUser6: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
-    roleId: 2
   },
 
   badUser: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
+  },
+
+  badUser2: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: 'four'
   },
 
   testUser: {
@@ -151,10 +166,6 @@ module.exports = {
 
   updateRole1: {
     title: 'rookie update'
-  },
-
-  duplicateRole1: {
-    title: 'rookie'
   },
 
   newRole2: {

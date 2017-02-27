@@ -25,7 +25,10 @@ export default {
         userEmail: user.email
       });
     })
-    .catch(error => res.status(400).send({ error }));
+    .catch(error => res.status(400).send({
+      status: false,
+      message: error.errors[0].message
+    }));
   },
 
   /**
@@ -57,10 +60,15 @@ export default {
         });
       }
       return res.status(400).send({
+        status: false,
         message: 'Incorrect username and password combination!'
       });
     })
-    .catch(error => res.status(400).send({ error }));
+    .catch(error => res.status(400).send({
+      status: false,
+      message: 'User does not exist.',
+      error: error.message
+    }));
   },
 
   /**
@@ -97,8 +105,7 @@ export default {
     })
     .then((users) => {
       res.status(200).send(users);
-    })
-    .catch(error => res.status(400).send({ error }));
+    });
   },
 
   /**
@@ -120,11 +127,10 @@ export default {
         'updatedAt'
       ]
     })
-      .then((user) => {
-        if (!user) return res.status(404).send({ message: 'User not found.' });
-        res.status(200).send(user);
-      })
-      .catch(error => res.status(400).send({ error }));
+    .then((user) => {
+      if (!user) return res.status(404).send({ message: 'User not found.' });
+      res.status(200).send(user);
+    });
   },
 
   /**
@@ -168,10 +174,8 @@ export default {
         })
         .then((found) => {
           res.status(200).send({ found });
-        })
-        .catch(error => res.status(400).send({ error }));
-      })
-      .catch(error => res.status(400).send({ error }));
+        });
+      });
   },
 
   /**

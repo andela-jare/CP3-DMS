@@ -58,7 +58,20 @@ describe('Users', () => {
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
-          should(res.body).have.property('error');
+          should(res.body).have.property('message');
+          done();
+        });
+    });
+
+    it('should fail if password length is less than 6 characters', (done) => {
+      server.post('/users')
+      .send(testData.badUser2)
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          should(res.body).have.property('message');
+          res.body.message.should
+          .equal('Password must be at least 6 characters.');
           done();
         });
     });
@@ -76,6 +89,25 @@ describe('Users', () => {
         });
     });
 
+    it('should return error message if username and password do not match.',
+    (done) => {
+      server.post('/login')
+      .send({
+        username: testData.regularUser.username,
+        password: 'password12345'
+      })
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          res.status.should.equal(400);
+          res.body.should.have.property('message');
+          res.body.message.should
+          .equal('Incorrect username and password combination!');
+          res.body.status.should.equal(false);
+          done();
+        });
+    });
+
     it('should return an error for a user yet to be created', (done) => {
       server.post('/login')
       .send(testData.regularUser5)
@@ -83,17 +115,19 @@ describe('Users', () => {
         .expect(400)
         .end((err, res) => {
           res.status.should.equal(400);
-          should(res.body).have.property('error');
+          res.body.should.have.property('message');
+          res.body.should.have.property('status');
+          res.body.message.should.equal('User does not exist.');
           done();
         });
     });
   });
 
   describe('edit user ', () => {
+    const newAttributes = {
+      firstName: 'John', lastName: 'Doe', email: 'johndoe@mail.com'
+    };
     it('should update the user attributes', (done) => {
-      const newAttributes = {
-        firstName: 'John', lastName: 'Doe', email: 'johndoe@mail.com'
-      };
       server.put(`/users/${userId}`)
         .set({ 'x-access-token': token })
         .send(newAttributes)
@@ -107,17 +141,18 @@ describe('Users', () => {
     });
 
     it('should allow an admin update only roles', (done) => {
-      const newAttributes = {
+      const newAttributes2 = {
         firstName: 'newJohn', lastName: 'newDoe', roleId: 1
       };
       server.put(`/users/${userId}`)
         .set({ 'x-access-token': adminToken })
-        .send(newAttributes)
+        .send(newAttributes2)
         .end((err, res) => {
           res.status.should.equal(200);
-          should(res.body.found.roleId).be.exactly(newAttributes.roleId);
-          should(res.body.found.firstName).not.exactly(newAttributes.firstName);
-          should(res.body.found.lastName).not.exactly(newAttributes.lastName);
+          should(res.body.found.roleId).be.exactly(newAttributes2.roleId);
+          should(res.body.found.firstName).not
+          .exactly(newAttributes2.firstName);
+          should(res.body.found.lastName).not.exactly(newAttributes2.lastName);
           done();
         });
     });
@@ -125,6 +160,7 @@ describe('Users', () => {
     it('should return NOT FOUND for an invalid id', (done) => {
       server.put('/users/100')
         .set({ 'x-access-token': token })
+        .send(newAttributes)
         .expect(404)
         .end((err, res) => {
           res.status.should.equal(404);
@@ -133,10 +169,11 @@ describe('Users', () => {
         });
     });
 
-    it('should send an error message if user is trying to update another user',
-    (done) => {
+    it(`should not authorized message if a regular user is trying to update 
+    another user`, (done) => {
       server.put(`/users/${adminId}`)
         .set({ 'x-access-token': token })
+        .send(newAttributes)
         .expect(401)
         .end((err, res) => {
           res.status.should.equal(403);
@@ -148,6 +185,7 @@ describe('Users', () => {
 
     it('should return unauthorized for a user not logged in.', (done) => {
       server.put(`/users/${userId}`)
+        .send(newAttributes)
         .expect(401)
         .end((err, res) => {
           res.status.should.equal(401);

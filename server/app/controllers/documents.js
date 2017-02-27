@@ -17,7 +17,9 @@ export default {
       ownerId: req.decoded.userId
     })
     .then(document => res.status(200).send({ document }))
-    .catch(error => res.status(400).send({ error }));
+    .catch(error => res.status(400).send({
+      message: error.errors[0].message
+    }));
   },
 
   /**
@@ -31,7 +33,7 @@ export default {
       .then((document) => {
         if (!document) {
           return res.status(404).send({
-            message: 'Document Not found.',
+            message: 'Document not found.',
             status: false
           });
         }
@@ -66,12 +68,12 @@ export default {
     const offsetSuccess = limitOffsetHelper(req.query.offset, 0);
     if (!limitSuccess) {
       return res.status(400).send({
-        message: 'Please enter a valid number within the range 1 - 10.'
+        message: 'Enter a valid number for limit within the range 1 - 10.'
       });
     }
     if (!offsetSuccess) {
       return res.status(400).send({
-        message: 'Please enter a valid number within the range 1 - 10.'
+        message: 'Enter a valid number for offset within the range 1 - 10.'
       });
     }
     query.limit = req.query.limit ? req.query.limit : 10;
@@ -138,17 +140,21 @@ export default {
    */
   usersDocument(req, res) {
     const id = Number(req.params.id);
-    Document.findAll({
+    let query = {
       where: {
         ownerId: id
       }
-    })
-    .then((documents) => {
-      if (req.decoded.userId === id || req.decoded.roleId === 1) {
-        return res.status(200).send({ documents });
-      }
-      res.status(403).send({ message: 'Access denied!' });
-    });
+    };
+    if (req.decoded.userId !== id || req.decoded.roleId === 1) {
+      query = {
+        where: {
+          ownerId: id,
+          access: 'public'
+        }
+      };
+    }
+    Document.findAll(query)
+    .then(documents => res.status(200).send({ documents }));
   },
   /**
    * Gets all documents relevant to search term

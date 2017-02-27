@@ -4,38 +4,65 @@ export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
-      unique: true,
+      unique: {
+        msg: 'Sorry, username already exists.'
+      },
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        len: {
+          args: [3, 20],
+          msg: 'Sorry, username must be between 3 to 20 characters.'
+        }
       }
     },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        len: {
+          args: [2, 20],
+          msg: 'Sorry, first name must be between 2 to 20 characters.'
+        }
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        len: {
+          args: [2, 20],
+          msg: 'Sorry, last name must be between 2 to 20 characters.'
+        }
       }
     },
     email: {
       type: DataTypes.STRING,
-      unique: true,
+      unique: {
+        msg: 'Sorry, email already exists.'
+      },
       allowNull: false,
       validate: {
-        isEmail: true
+        isEmail: {
+          msg: 'Invalid email'
+        }
       }
     },
     password: {
       type: DataTypes.STRING,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        isMin(value) {
+          if (parseInt(value.length, 10) < 6) {
+            throw new Error('Password must be at least 6 characters.');
+          }
+        },
+        // is: {
+        //   args: /^[a-z0-9-@$!%*#?&._]+$/i,
+        //   msg: 'Password can only contain alphanumeric and special characters'
+        // }
       }
     },
     roleId: {

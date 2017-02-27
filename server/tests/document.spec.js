@@ -49,7 +49,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(400);
-          should(res.body).have.property('error');
+          res.body.should.have.property('message');
+          res.body.message.should.equal('content cannot be null');
           done();
         });
     });
@@ -115,7 +116,7 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(404);
-          res.body.message.should.equal('Document Not found.');
+          res.body.message.should.equal('Document not found.');
           done();
         });
     });
@@ -176,7 +177,20 @@ describe('Document Api', () => {
           res.status.should.equal(400);
           should(res.body).have.property('message');
           res.body.message.should
-          .equal('Please enter a valid number within the range 1 - 10.');
+          .equal('Enter a valid number for limit within the range 1 - 10.');
+          done();
+        });
+    });
+
+    it('should return an error message if invalid offset query is passed',
+    (done) => {
+      server.get('/documents?offset=-1')
+      .set({ 'x-access-token': user4Token })
+        .end((err, res) => {
+          res.status.should.equal(400);
+          should(res.body).have.property('message');
+          res.body.message.should
+          .equal('Enter a valid number for offset within the range 1 - 10.');
           done();
         });
     });
@@ -256,6 +270,8 @@ describe('Document Api', () => {
           res.status.should.equal(200);
           res.body.documents.should.be.a.Array();
           res.body.documents.length.should.equal(2);
+          res.body.documents[0].access.should.equal('public');
+          res.body.documents[1].access.should.equal('private');
           done();
         });
     });
@@ -265,8 +281,10 @@ describe('Document Api', () => {
       server.get(`/users/${userId}/documents`)
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
-          res.status.should.equal(403);
-          res.body.message.should.equal('Access denied!');
+          res.status.should.equal(200);
+          res.body.documents.should.be.a.Array();
+          res.body.documents.length.should.equal(1);
+          res.body.documents[0].access.should.equal('public');
           done();
         });
     });
