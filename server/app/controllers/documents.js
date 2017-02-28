@@ -208,8 +208,15 @@ export default {
     }
     query.limit = req.query.limit ? +req.query.limit : 10;
     query.offset = req.query.offset ? +req.query.offset : 0;
-    Document.findAll(query)
-    .then(docs => res.status(200).send(docs))
+    Document.findAndCountAll(query)
+    .then((docs) => {
+      if (!docs.count) {
+        return res.status(404).send({
+          message: `No results found for ${search}.`
+        });
+      }
+      return res.status(200).send(docs);
+    })
     .catch(error => res.status(400).send({ error }));
   }
 };

@@ -12,7 +12,7 @@ class Authenticate {
    * @param {Object} res - The response Object
    * @param {Function} next - Function call to move to the next middleware
    * or endpoint controller
-   * @return {Void} - Returns void
+   * @return {void} - Returns void
    */
   static auth(req, res, next) {
     const token = req.headers['x-access-token'] || req.body.token;
@@ -21,6 +21,11 @@ class Authenticate {
         if (error) return res.status(401).send(error);
         db.User.findById(decoded.userId)
         .then((user) => {
+          if (!user.token) {
+            return res.status(401).send({
+              message: 'Please sign in or register to continue.'
+            });
+          }
           req.decoded = decoded;
           req.decoded.roleId = user.roleId;
           next();
@@ -39,7 +44,7 @@ class Authenticate {
    * @param{Object} req - Request Object
    * @param{Object} res - Response Object
    * @param{Object} next - Function to pass flow to the next controller
-   * @return{Void|Object} - returns Void or response object.
+   * @return{void|Object} - returns void or response object.
    */
   static permitAdmin(req, res, next) {
     db.Role.findById(req.decoded.roleId)

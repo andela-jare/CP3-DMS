@@ -61,6 +61,10 @@ export default (sequelize, DataTypes) => {
         },
       }
     },
+    token: {
+      type: DataTypes.STRING,
+      defaultValue: 'registered',
+    },
     roleId: {
       type: DataTypes.INTEGER,
       defaultValue: 2,
@@ -97,7 +101,9 @@ export default (sequelize, DataTypes) => {
         user.hashPassword();
       },
       beforeUpdate(user) {
-        user.hashPassword();
+        if (user._changed.password) {
+          user.hashPassword();
+        }
       }
     }
   });

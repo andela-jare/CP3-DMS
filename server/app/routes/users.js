@@ -6,7 +6,7 @@ const user = express.Router();
 
 user.post('/users', users.create);
 user.post('/login', users.login);
-user.get('/logout', Authenticate.auth, users.logout);
+user.post('/logout', Authenticate.auth, users.logout);
 
 user.get('/users', Authenticate.auth, users.allUsers);
 user.get('/users/:id', Authenticate.auth, users.findUser);

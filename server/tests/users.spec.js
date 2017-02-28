@@ -323,11 +323,23 @@ describe('Users', () => {
 
   describe('logout', () => {
     it('should be able to logout', (done) => {
-      server.get('/logout')
+      server.post('/logout')
       .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.message.should.equal('You have successfully logged out');
+          done();
+        });
+    });
+
+    it('should prevent a logged out user from accessing a protected route',
+    (done) => {
+      server.get('/users')
+      .set({ 'x-access-token': adminToken })
+        .end((err, res) => {
+          res.status.should.equal(401);
+          res.body.message.should
+          .equal('Please sign in or register to continue.');
           done();
         });
     });

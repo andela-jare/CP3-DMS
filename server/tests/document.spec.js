@@ -317,8 +317,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
       .end((err, res) => {
         res.status.should.equal(200);
-        res.body.should.be.a.Array();
-        should(res.body.length).equal(1);
+        res.body.rows.should.be.a.Array();
+        should(res.body.count).equal(1);
         done();
       });
     });
@@ -328,8 +328,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': adminToken })
       .end((err, res) => {
         res.status.should.equal(200);
-        res.body.should.be.a.Array();
-        should(res.body.length).equal(1);
+        res.body.rows.should.be.a.Array();
+        should(res.body.count).equal(1);
         done();
       });
     });
@@ -339,9 +339,8 @@ describe('Document Api', () => {
       server.get('/documents/search?search=Doc 1 edit')
       .set({ 'x-access-token': user4Token })
       .end((err, res) => {
-        res.status.should.equal(200);
-        res.body.should.be.a.Array();
-        should(res.body.length).equal(0);
+        res.status.should.equal(404);
+        res.body.message.should.equal('No results found for Doc 1 edit.');
         done();
       });
     });

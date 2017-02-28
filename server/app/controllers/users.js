@@ -53,12 +53,15 @@ export default {
           userId: user.id,
           roleId: user.roleId
         }, process.env.SECRET, { expiresIn: '24h' });
-        return res.status(200).json({
-          success: true,
-          message: 'You have successfully signed in!',
-          token,
-          userId: user.id,
-          userEmail: user.email
+        return user.update({ token })
+        .then(() => {
+          res.status(200).json({
+            success: true,
+            message: 'You have successfully signed in!',
+            token,
+            userId: user.id,
+            userEmail: user.email
+          });
         });
       }
       return res.status(400).send({
@@ -81,9 +84,17 @@ export default {
   * @returns {Object} - Returns response object
   */
   logout(req, res) {
-    return res.status(200).send({
-      message: 'You have successfully logged out'
-    });
+    User.findById(req.decoded.userId)
+    .then((user) => {
+      user.update({ token: null })
+      .then(() => res.status(200).send({
+        message: 'You have successfully logged out'
+      }));
+    })
+    .catch(error => res.status(500).send({ error }));
+    // return res.status(200).send({
+    //   message: 'You have successfully logged out'
+    // });
   },
 
   /**

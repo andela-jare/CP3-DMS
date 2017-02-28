@@ -29,6 +29,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      token: {
+        type: Sequelize.STRING,
+        defaultValue: 'registered',
+      },
       roleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
