@@ -117,7 +117,6 @@ describe('Users', () => {
           res.body.should.have.property('message');
           res.body.message.should
           .equal('Incorrect username and password combination!');
-          res.body.status.should.equal(false);
           done();
         });
     });
@@ -130,7 +129,6 @@ describe('Users', () => {
         .end((err, res) => {
           res.status.should.equal(400);
           res.body.should.have.property('message');
-          res.body.should.have.property('status');
           res.body.message.should.equal('User does not exist.');
           done();
         });

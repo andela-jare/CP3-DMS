@@ -28,7 +28,6 @@ export default {
       });
     })
     .catch(error => res.status(400).send({
-      status: false,
       message: error.errors[0].message
     }));
   },
@@ -56,7 +55,6 @@ export default {
         return user.update({ token })
         .then(() => {
           res.status(200).json({
-            success: true,
             message: 'You have successfully signed in!',
             token,
             userId: user.id,
@@ -65,12 +63,10 @@ export default {
         });
       }
       return res.status(400).send({
-        status: false,
         message: 'Incorrect username and password combination!'
       });
     })
     .catch(error => res.status(400).send({
-      status: false,
       message: 'User does not exist.',
       error: error.message
     }));

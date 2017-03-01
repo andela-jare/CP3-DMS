@@ -34,7 +34,6 @@ export default {
         if (!document) {
           return res.status(404).send({
             message: 'Document not found.',
-            status: false
           });
         }
         if (helper.documentAccess(document, req)) {
