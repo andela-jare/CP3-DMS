@@ -57,6 +57,12 @@ export default {
             success: false
           });
         }
+        if (role.title === 'admin' || role.title === 'regular') {
+          return res.status(403).send({
+            message: 'You cannot edit admin or regular role.',
+            status: false
+          });
+        }
         role.update(req.body)
           .then(updatedRole => res.send(updatedRole));
       });
@@ -74,6 +80,12 @@ export default {
         if (!role) {
           return res.status(404).send({
             message: `Role with id: ${req.params.id} not found.`,
+            status: false
+          });
+        }
+        if (role.title === 'admin' || role.title === 'regular') {
+          return res.status(403).send({
+            message: 'You cannot delete admin or regular role.',
             status: false
           });
         }

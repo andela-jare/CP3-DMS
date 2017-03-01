@@ -80,14 +80,37 @@ describe('Roles:', () => {
   });
 
   describe('Update Role', () => {
-    it('should allow only an Admin user update a role',
-    (done) => {
+    it('should allow only an Admin user update a role', (done) => {
       server.put(`/roles/${newRoleId}`)
       .set({ 'x-access-token': adminToken })
       .send(testData.updateRole1)
       .end((error, res) => {
         should(res.status).equal(200);
         should(res.body.title).equal(testData.updateRole1.title);
+        done();
+      });
+    });
+
+    it('should not allow an Admin user update admin role', (done) => {
+      server.put('/roles/1')
+      .set({ 'x-access-token': adminToken })
+      .send(testData.updateRole1)
+      .end((error, res) => {
+        should(res.status).equal(403);
+        res.body.message.should
+        .equal('You cannot edit admin or regular role.');
+        done();
+      });
+    });
+
+    it('should not allow an Admin user update regular role', (done) => {
+      server.put('/roles/2')
+      .set({ 'x-access-token': adminToken })
+      .send(testData.updateRole1)
+      .end((error, res) => {
+        should(res.status).equal(403);
+        res.body.message.should
+        .equal('You cannot edit admin or regular role.');
         done();
       });
     });
@@ -216,6 +239,30 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(200);
         res.body.message.should.equal('Role deleted successfully.');
+        done();
+      });
+    });
+
+    it('should not allow an Admin User delete an admin role',
+    (done) => {
+      server.delete('/roles/1')
+      .set({ 'x-access-token': adminToken })
+      .end((error, res) => {
+        should(res.status).equal(403);
+        res.body.message.should
+        .equal('You cannot delete admin or regular role.');
+        done();
+      });
+    });
+
+    it('should not allow an Admin User delete a regular role',
+    (done) => {
+      server.delete('/roles/2')
+      .set({ 'x-access-token': adminToken })
+      .end((error, res) => {
+        should(res.status).equal(403);
+        res.body.message.should
+        .equal('You cannot delete admin or regular role.');
         done();
       });
     });

@@ -13,6 +13,14 @@ module.exports = {
     title: 'regular'
   },
 
+  firstUser: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  },
+
   adminUser: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
@@ -114,9 +122,18 @@ module.exports = {
     password: faker.internet.password(),
   },
 
+  regularUser8: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  },
+
   badUser: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
+    email: 'iambademail',
     lastName: faker.name.lastName(),
   },
 
@@ -168,6 +185,11 @@ module.exports = {
     content: faker.lorem.paragraph()
   },
 
+  document4: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph()
+  },
+
   adminRole: {
     title: 'admin'
   },
@@ -190,5 +212,9 @@ module.exports = {
 
   newRole3: {
     title: 'professional'
+  },
+
+  newRole4: {
+    title: 'guest'
   }
 };

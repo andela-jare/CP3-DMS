@@ -2,17 +2,30 @@ export default (sequelize, DataTypes) => {
   const Document = sequelize.define('Document', {
     title: {
       allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: {
+          msg: 'title cannot be empty.'
+        }
+      }
     },
     content: {
       allowNull: false,
-      type: DataTypes.TEXT
+      type: DataTypes.TEXT,
+      validate: {
+        notEmpty: {
+          msg: 'content cannot be empty.'
+        }
+      }
     },
     access: {
       defaultValue: 'public',
       type: DataTypes.STRING,
       validate: {
-        isIn: [['private', 'public']]
+        isIn: {
+          args: [['private', 'public']],
+          msg: 'access can only be public or private.'
+        }
       }
     },
     ownerId: {

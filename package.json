@@ -10,7 +10,7 @@
     "seed": "NODE_ENV=test ./node_modules/.bin/babel-node server/tests/helpers/seedHelper.js",
     "migrate": "sequelize db:migrate",
     "mocha": "mocha --compilers js:babel-core/register server/tests",
-    "test": "NODE_ENV=test npm run seed && rm -rf coverage/ && NODE_ENV=test babel-node ./node_modules/babel-istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec server/tests",
+    "test": "NODE_ENV=test npm run seed && rm -rf coverage/ && NODE_ENV=test babel-node ./node_modules/babel-istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec server/tests server/tests/models",
     "test:watch": "npm run test -- --watch",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "lint": "node_modules/.bin/esw",
