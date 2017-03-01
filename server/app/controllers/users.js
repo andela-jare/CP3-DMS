@@ -92,9 +92,6 @@ export default {
       }));
     })
     .catch(error => res.status(500).send({ error }));
-    // return res.status(200).send({
-    //   message: 'You have successfully logged out'
-    // });
   },
 
   /**
@@ -143,10 +140,18 @@ export default {
         } else if (helper.userOrAdmin(req.params.id, req)) {
           return res.status(403).send({ message: 'You are not authorized.' });
         }
-        if (helper.isAdmin(req.decoded.roleId)) {
-          query = {
-            roleId: req.body.roleId,
-          };
+
+        if (helper.isAdmin(req.decoded.roleId)
+        && req.decoded.userId !== user.id) {
+          if (req.body.roleId) {
+            query = {
+              roleId: req.body.roleId
+            };
+          } else {
+            return res.status(400).send({
+              message: 'No role id provided.'
+            });
+          }
         }
         user.update(query, {
           where: {
@@ -156,7 +161,8 @@ export default {
         .then((found) => {
           res.status(200).send({ found });
         });
-      });
+      })
+      .catch(error => res.status(400).send({ error }));
   },
 
   /**
