@@ -200,7 +200,7 @@ describe('Document Api', () => {
           res.status.should.equal(400);
           should(res.body).have.property('message');
           res.body.message.should
-          .equal('Enter a valid number for offset within the range 1 - 10.');
+          .equal('Please enter a valid number starting from 0 for offset.');
           done();
         });
     });

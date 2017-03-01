@@ -6,10 +6,26 @@
   * @return{Boolean} - returns true or false.
   */
 export default {
-  limitOffsetHelper(query, min) {
+  limitHelper(query, min) {
     if (query < min || query > 10) {
       return false;
     }
+    return true;
+  },
+  limitOffset(query, req, res) {
+    const limitSuccess = this.limitHelper(req.query.limit, 1);
+    if (!limitSuccess) {
+      return res.status(400).send({
+        message: this.limitOffsetMessage('limit', 1)
+      });
+    }
+    if (req.query.offset < 0) {
+      return res.status(400).send({
+        message: 'Please enter a valid number starting from 0 for offset.'
+      });
+    }
+    query.limit = req.query.limit ? +req.query.limit : 10;
+    query.offset = req.query.offset ? +req.query.offset : 0;
     return true;
   },
   usersFields(fields) {
@@ -58,8 +74,8 @@ export default {
       return true;
     }
   },
-  limitOffsetMessage(name) {
-    return `Enter a valid number for ${name} within the range 1 - 10.`;
+  limitOffsetMessage(name, min) {
+    return `Enter a valid number for ${name} within the range ${min} - 10.`;
   },
   norUserAdmin(req) {
     if (req.decoded.userId !== Number(req.params.id)

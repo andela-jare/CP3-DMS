@@ -62,24 +62,12 @@ export default {
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
-    const limitSuccess = helper.limitOffsetHelper(req.query.limit, 1);
-    const offsetSuccess = helper.limitOffsetHelper(req.query.offset, 0);
-    if (!limitSuccess) {
-      return res.status(400).send({
-        message: helper.limitOffsetMessage('limit')
+    if (helper.limitOffset(query, req, res) === true) {
+      Document.findAll(query)
+      .then((document) => {
+        res.status(200).send({ document });
       });
     }
-    if (!offsetSuccess) {
-      return res.status(400).send({
-        message: helper.limitOffsetMessage('offset')
-      });
-    }
-    query.limit = req.query.limit ? req.query.limit : 10;
-    query.offset = req.query.offset ? req.query.offset : 0;
-    Document.findAll(query)
-    .then((document) => {
-      res.status(200).send({ document });
-    });
   },
 
   /**
@@ -149,8 +137,10 @@ export default {
         }
       };
     }
-    Document.findAll(query)
-    .then(documents => res.status(200).send({ documents }));
+    if (helper.limitOffset(query, req, res) === true) {
+      Document.findAll(query)
+      .then(documents => res.status(200).send({ documents }));
+    }
   },
   /**
    * Gets all documents relevant to search term
@@ -194,29 +184,17 @@ export default {
       } };
     }
     query.order = '"createdAt" DESC';
-    const limitSuccess = helper.limitOffsetHelper(req.query.limit, 1);
-    const offsetSuccess = helper.limitOffsetHelper(req.query.offset, 0);
-    if (!limitSuccess) {
-      return res.status(400).send({
-        message: 'Please enter a valid number within the range 1 - 10.'
-      });
+    if (helper.limitOffset(query, req, res) === true) {
+      Document.findAndCountAll(query)
+      .then((docs) => {
+        if (!docs.count) {
+          return res.status(404).send({
+            message: `No results found for ${search}.`
+          });
+        }
+        return res.status(200).send(docs);
+      })
+      .catch(error => res.status(400).send({ error }));
     }
-    if (!offsetSuccess) {
-      return res.status(400).send({
-        message: 'Please enter a valid number within the range 1 - 10.'
-      });
-    }
-    query.limit = req.query.limit ? +req.query.limit : 10;
-    query.offset = req.query.offset ? +req.query.offset : 0;
-    Document.findAndCountAll(query)
-    .then((docs) => {
-      if (!docs.count) {
-        return res.status(404).send({
-          message: `No results found for ${search}.`
-        });
-      }
-      return res.status(200).send(docs);
-    })
-    .catch(error => res.status(400).send({ error }));
   }
 };
