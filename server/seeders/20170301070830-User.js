@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
 
 dotenv.config();
 module.exports = {
@@ -10,13 +11,14 @@ module.exports = {
         firstName: process.env.USER_FIRSTNAME,
         lastName: process.env.USER_LASTNAME,
         email: process.env.USER_EMAIL,
-        password: process.env.USER_PASSWORD,
+        password: bcrypt
+        .hashSync(process.env.USER_PASSWORD, bcrypt.genSaltSync(8)),
         token: process.env.USER_TOKEN,
         roleId: process.env.USER_ROLEID,
         createdAt: new Date(),
         updatedAt: new Date()
       }
-    ], {});
+    ], { returning: true });
   },
 
   down(queryInterface) {
