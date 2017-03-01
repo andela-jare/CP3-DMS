@@ -1,6 +1,10 @@
 {
   "development": {
-    "use_env_variable": "DB_DEV_URL",
+    "username": "postgres",
+    "password": "password",
+    "database": "docman",
+    "host": "127.0.0.1",
+    "port": 5432,
     "dialect": "postgres"
   },
   "test": {
