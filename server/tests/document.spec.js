@@ -15,24 +15,26 @@ describe('Document Api', () => {
       .send(testData.regularUser3)
       .end((err, res) => {
         token = res.body.token;
-        userId = res.body.userId;
-      });
-    });
-    db.User.create(testData.adminUser3)
-    .then(() => {
-      server.post('/login')
-      .send(testData.adminUser3)
-      .end((err, res) => {
-        adminToken = res.body.token;
-      });
-    });
-    db.User.create(testData.regularUser4)
-    .then(() => {
-      server.post('/login')
-      .send(testData.regularUser4)
-      .end((err, res) => {
-        user4Token = res.body.token;
-        done();
+        userId = res.body.user.id;
+
+        db.User.create(testData.adminUser3)
+        .then(() => {
+          server.post('/login')
+          .send(testData.adminUser3)
+          .end((err, res) => {
+            adminToken = res.body.token;
+
+            db.User.create(testData.regularUser4)
+            .then(() => {
+              server.post('/login')
+              .send(testData.regularUser4)
+              .end((err, res) => {
+                user4Token = res.body.token;
+                done();
+              });
+            });
+          });
+        });
       });
     });
   });
@@ -219,7 +221,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          should(res.body.title).be.exactly(updateDocument.title);
+          should(res.body.title)
+            .be.exactly(updateDocument.title);
           done();
         });
     });

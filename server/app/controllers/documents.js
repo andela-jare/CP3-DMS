@@ -16,10 +16,12 @@ export default {
       access: req.body.access,
       ownerId: req.decoded.userId
     })
-    .then(document => res.status(200).send({ document }))
-    .catch(error => res.status(400).send({
-      message: error.errors[0].message
-    }));
+    .then(document => res.status(200)
+      .send({ document }))
+    .catch(error => res.status(400)
+      .send({
+        message: error.errors[0].message
+      }));
   },
 
   /**
@@ -32,15 +34,18 @@ export default {
     Document.findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404).send({
-            message: 'Document not found.',
-          });
+          return res.status(404)
+            .send({
+              message: 'Document not found.',
+            });
         }
         if (helper.documentAccess(document, req)) {
-          return res.status(200).send({ document });
+          return res.status(200)
+            .send({ document });
         }
 
-        res.status(403).send({ message: 'You are unauthorized.' });
+        res.status(403)
+          .send({ message: 'You are unauthorized.' });
       });
   },
 
@@ -64,7 +69,8 @@ export default {
     if (helper.limitOffset(query, req, res) === true) {
       Document.findAll(query)
       .then((document) => {
-        res.status(200).send({ document });
+        res.status(200)
+          .send({ document });
       });
     }
   },
@@ -79,15 +85,18 @@ export default {
     Document.findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404).send({ message: 'Document Not found.' });
+          return res.status(404)
+            .send({ message: 'Document Not found.' });
         }
         if (!helper.isOwner(document, req)) {
-          return res.status(403).send({
-            message: 'You are not allowed to edit this document.'
-          });
+          return res.status(403)
+            .send({
+              message: 'You are not allowed to edit this document.'
+            });
         }
         document.update(req.body)
-        .then(updatedDocument => res.status(200).send(updatedDocument));
+        .then(updatedDocument => res.status(200)
+          .send(updatedDocument));
       });
   },
 
@@ -104,14 +113,16 @@ export default {
           return res.status(404).send({ message: 'Document Not found' });
         }
         if (helper.userOrAdmin(document.ownerId, req)) {
-          return res.status(403).send({
-            message: 'This document does not belong to you.'
-          });
+          return res.status(403)
+            .send({
+              message: 'This document does not belong to you.'
+            });
         }
         document.destroy()
-        .then(() => res.status(200).send({
-          message: 'Document successfully deleted!'
-        }));
+        .then(() => res.status(200)
+          .send({
+            message: 'Document successfully deleted!'
+          }));
       });
   },
 
@@ -138,7 +149,8 @@ export default {
     }
     if (helper.limitOffset(query, req, res) === true) {
       Document.findAll(query)
-      .then(documents => res.status(200).send({ documents }));
+      .then(documents => res.status(200)
+        .send({ documents }));
     }
   },
   /**
@@ -187,13 +199,16 @@ export default {
       Document.findAndCountAll(query)
       .then((docs) => {
         if (!docs.count) {
-          return res.status(404).send({
-            message: `No results found for ${search}.`
-          });
+          return res.status(404)
+            .send({
+              message: `No results found for ${search}.`
+            });
         }
-        return res.status(200).send(docs);
+        return res.status(200)
+          .send(docs);
       })
-      .catch(error => res.status(400).send({ error }));
+      .catch(error => res.status(400)
+        .send({ error }));
     }
   }
 };

@@ -121,7 +121,6 @@ describe('Roles:', () => {
       .send(testData.updateRole1)
       .end((error, res) => {
         should(res.status).equal(404);
-        should(res.body.success).equal(false);
         res.body.message.should
         .equal(`Role with id: ${newRoleId + 300} not found.`);
         done();

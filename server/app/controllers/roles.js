@@ -9,7 +9,8 @@ export default {
    */
   index(req, res) {
     Role.findAll()
-    .then(roles => res.send(roles));
+    .then(roles => res.status(200)
+      .send(roles));
   },
 
   /**
@@ -20,8 +21,10 @@ export default {
    */
   create(req, res) {
     Role.create(req.body)
-    .then(role => res.status(201).send(role))
-    .catch(error => res.status(400).send({ message: error.errors[0].message }));
+    .then(role => res.status(201)
+      .send(role))
+    .catch(error => res.status(400)
+      .send({ message: error.errors[0].message }));
   },
 
    /**
@@ -34,11 +37,13 @@ export default {
     Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
-          return res.status(404).send({
-            message: `Role with id: ${req.params.id} not found.`
-          });
+          return res.status(404)
+            .send({
+              message: `Role with id: ${req.params.id} not found.`
+            });
         }
-        res.send(role);
+        res.status(200)
+          .send(role);
       });
   },
 
@@ -52,18 +57,20 @@ export default {
     Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
-          return res.status(404).send({
-            message: `Role with id: ${req.params.id} not found.`,
-            success: false
-          });
+          return res.status(404)
+            .send({
+              message: `Role with id: ${req.params.id} not found.`
+            });
         }
         if (role.title === 'admin' || role.title === 'regular') {
-          return res.status(403).send({
-            message: 'You cannot edit admin or regular role.'
-          });
+          return res.status(403)
+            .send({
+              message: 'You cannot edit admin or regular role.'
+            });
         }
         role.update(req.body)
-          .then(updatedRole => res.send(updatedRole));
+          .then(updatedRole => res.status(200)
+            .send(updatedRole));
       });
   },
 
@@ -77,17 +84,20 @@ export default {
     Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
-          return res.status(404).send({
-            message: `Role with id: ${req.params.id} not found.`
-          });
+          return res.status(404)
+            .send({
+              message: `Role with id: ${req.params.id} not found.`
+            });
         }
         if (role.title === 'admin' || role.title === 'regular') {
-          return res.status(403).send({
-            message: 'You cannot delete admin or regular role.'
-          });
+          return res.status(403)
+            .send({
+              message: 'You cannot delete admin or regular role.'
+            });
         }
         role.destroy()
-          .then(() => res.send({ message: 'Role deleted successfully.' }));
+          .then(() => res.status(200)
+            .send({ message: 'Role deleted successfully.' }));
       });
   }
 };

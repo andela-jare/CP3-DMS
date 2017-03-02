@@ -15,7 +15,7 @@ describe('Users', () => {
       .send(testData.adminUser6)
       .end((err, res) => {
         adminToken = res.body.token;
-        adminId = res.body.userId;
+        adminId = res.body.user.id;
         done();
       });
     });
@@ -29,9 +29,9 @@ describe('Users', () => {
         .expect(201)
         .end((err, res) => {
           should(res.body).have.property('token');
-          should(res.body).have.property('userId');
+          should(res.body).have.property('user');
           token = res.body.token;
-          userId = res.body.userId;
+          userId = res.body.user.id;
         });
       server.post('/users')
       .send(testData.regularUser2)
@@ -39,8 +39,8 @@ describe('Users', () => {
         .expect(201)
         .end((err, res) => {
           should(res.body).have.property('token');
-          should(res.body).have.property('userId');
-          userId2 = res.body.userId;
+          should(res.body).have.property('user');
+          userId2 = res.body.user.id;
         });
       server.post('/users')
       .send(testData.regularUser7)
@@ -48,8 +48,8 @@ describe('Users', () => {
         .expect(201)
         .end((err, res) => {
           should(res.body).have.property('token');
-          should(res.body).have.property('userId');
-          userId7 = res.body.userId;
+          should(res.body).have.property('user');
+          userId7 = res.body.user.id;
           userToken7 = res.body.token;
           done();
         });
@@ -145,9 +145,15 @@ describe('Users', () => {
         .send(newAttributes)
         .end((err, res) => {
           res.status.should.equal(200);
-          should(res.body.found.lastName).be.exactly(newAttributes.lastName);
-          should(res.body.found.firstName).be.exactly(newAttributes.firstName);
-          should(res.body.found.email).be.exactly(newAttributes.email);
+          should(res.body.updatedUser.lastName)
+            .be
+            .exactly(newAttributes.lastName);
+          should(res.body.updatedUser.firstName)
+            .be
+            .exactly(newAttributes.firstName);
+          should(res.body.updatedUser.email)
+            .be
+            .exactly(newAttributes.email);
           done();
         });
     });
@@ -161,10 +167,15 @@ describe('Users', () => {
         .send(newAttributes2)
         .end((err, res) => {
           res.status.should.equal(200);
-          should(res.body.found.roleId).be.exactly(newAttributes2.roleId);
-          should(res.body.found.firstName).not
-          .exactly(newAttributes2.firstName);
-          should(res.body.found.lastName).not.exactly(newAttributes2.lastName);
+          should(res.body.updatedUser.roleId)
+            .be
+            .exactly(newAttributes2.roleId);
+          should(res.body.updatedUser.firstName)
+            .not
+            .exactly(newAttributes2.firstName);
+          should(res.body.updatedUser.lastName)
+            .not
+            .exactly(newAttributes2.lastName);
           done();
         });
     });

@@ -19,17 +19,21 @@ export default {
         userId: user.id,
         roleId: user.roleId
       }, process.env.SECRET, { expiresIn: '24h' });
-      res.status(201).json({
-        success: true,
-        message: 'You have successfully signed up!',
-        token,
-        userId: user.id,
-        userEmail: user.email
-      });
+
+      res.status(201)
+        .send({
+          message: 'You have successfully signed up!',
+          token,
+          user: {
+            id: user.id,
+            email: user.email
+          }
+        });
     })
-    .catch(error => res.status(400).send({
-      message: error.errors[0].message
-    }));
+    .catch(error => res.status(400)
+      .send({
+        message: error.errors[0].message
+      }));
   },
 
   /**
@@ -52,24 +56,30 @@ export default {
           userId: user.id,
           roleId: user.roleId
         }, process.env.SECRET, { expiresIn: '24h' });
+
         return user.update({ token })
         .then(() => {
-          res.status(200).json({
-            message: 'You have successfully signed in!',
-            token,
-            userId: user.id,
-            userEmail: user.email
-          });
+          res.status(200)
+            .json({
+              message: 'You have successfully signed in!',
+              token,
+              user: {
+                id: user.id,
+                email: user.email
+              }
+            });
         });
       }
-      return res.status(400).send({
-        message: 'Incorrect username and password combination!'
-      });
+
+      return res.status(400)
+        .send({
+          message: 'Incorrect username and password combination!'
+        });
     })
-    .catch(error => res.status(400).send({
-      message: 'User does not exist.',
-      error: error.message
-    }));
+    .catch(() => res.status(400)
+      .send({
+        message: 'User does not exist.'
+      }));
   },
 
   /**
@@ -83,11 +93,13 @@ export default {
     User.findById(req.decoded.userId)
     .then((user) => {
       user.update({ token: null })
-      .then(() => res.status(200).send({
-        message: 'You have successfully logged out'
-      }));
+      .then(() => res.status(200)
+        .send({
+          message: 'You have successfully logged out'
+        }));
     })
-    .catch(error => res.status(500).send({ error }));
+    .catch(error => res.status(500)
+      .send({ error }));
   },
 
   /**
@@ -101,7 +113,8 @@ export default {
       attributes: helper.findUsersAttributes()
     })
     .then((users) => {
-      res.status(200).send(users);
+      res.status(200)
+        .send(users);
     });
   },
 
@@ -116,8 +129,13 @@ export default {
       attributes: helper.findUsersAttributes()
     })
     .then((user) => {
-      if (!user) return res.status(404).send({ message: 'User not found.' });
-      res.status(200).send(user);
+      if (!user) {
+        return res.status(404)
+          .send({ message: 'User not found.' });
+      }
+
+      res.status(200)
+        .send(user);
     });
   },
 
@@ -132,9 +150,11 @@ export default {
     User.findById(req.params.id)
       .then((user) => {
         if (!user) {
-          return res.status(404).send({ message: 'User not found.' });
+          return res.status(404)
+            .send({ message: 'User not found.' });
         } else if (helper.userOrAdmin(req.params.id, req)) {
-          return res.status(403).send({ message: 'You are not authorized.' });
+          return res.status(403)
+            .send({ message: 'You are not authorized.' });
         }
 
         if (helper.isAdmin(req.decoded.roleId)
@@ -144,21 +164,25 @@ export default {
               roleId: req.body.roleId
             };
           } else {
-            return res.status(400).send({
-              message: 'No role id provided.'
-            });
+            return res.status(400)
+              .send({
+                message: 'No role id provided.'
+              });
           }
         }
+
         user.update(query, {
           where: {
             id: req.params.id,
           }
         })
-        .then((found) => {
-          res.status(200).send({ found });
+        .then((updatedUser) => {
+          res.status(200)
+            .send({ updatedUser });
         });
       })
-      .catch(error => res.status(400).send({ error }));
+      .catch(error => res.status(400)
+        .send({ error }));
   },
 
   /**
@@ -171,20 +195,27 @@ export default {
     User.findById(req.params.id)
       .then((user) => {
         if (!user) {
-          return res.status(404).send({ error: 'User does not exist' });
+          return res.status(404)
+            .send({ error: 'User does not exist' });
         }
+
         if (helper.userOrAdmin(req.params.id, req)) {
-          return res.status(403).send({ message: 'You are not authorized!' });
+          return res.status(403)
+            .send({ message: 'You are not authorized!' });
         }
+
         if (helper.isAdmin(user.roleId)) {
-          return res.status(403).send({
-            message: 'You can not delete an admin!'
-          });
+          return res.status(403)
+            .send({
+              message: 'You can not delete an admin!'
+            });
         }
+
         user.destroy()
-        .then(() => res.status(200).send({
-          message: 'User deleted successfully.'
-        }));
+        .then(() => res.status(200)
+          .send({
+            message: 'User deleted successfully.'
+          }));
       });
   }
 };
