@@ -1,18 +1,31 @@
-module.exports = (sequelize, DataTypes) => {
+export default (sequelize, DataTypes) => {
   const Document = sequelize.define('Document', {
     title: {
       allowNull: false,
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      validate: {
+        notEmpty: {
+          msg: 'title cannot be empty.'
+        }
+      }
     },
     content: {
       allowNull: false,
-      type: DataTypes.TEXT
+      type: DataTypes.TEXT,
+      validate: {
+        notEmpty: {
+          msg: 'content cannot be empty.'
+        }
+      }
     },
     access: {
       defaultValue: 'public',
       type: DataTypes.STRING,
       validate: {
-        isIn: [['private', 'public', 'role']]
+        isIn: {
+          args: [['private', 'public']],
+          msg: 'access can only be public or private.'
+        }
       }
     },
     ownerId: {
@@ -21,8 +34,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     classMethods: {
-      associate: (models) => {
-        // associations can be defined here
+      associate(models) {
         Document.belongsTo(models.User, {
           foreignKey: 'ownerId',
           onDelete: 'CASCADE'

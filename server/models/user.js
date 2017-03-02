@@ -1,46 +1,69 @@
 import bcrypt from 'bcrypt';
 
-module.exports = (sequelize, DataTypes) => {
-  const options = {
-    individualHooks: true
-  };
+export default (sequelize, DataTypes) => {
   const User = sequelize.define('User', {
     username: {
       type: DataTypes.STRING,
-      unique: true,
+      unique: {
+        msg: 'Sorry, username already exists.'
+      },
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        len: {
+          args: [3, 20],
+          msg: 'Sorry, username must be between 3 to 20 characters.'
+        }
       }
     },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        len: {
+          args: [2, 20],
+          msg: 'Sorry, first name must be between 2 to 20 characters.'
+        }
       }
     },
     lastName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        len: {
+          args: [2, 20],
+          msg: 'Sorry, last name must be between 2 to 20 characters.'
+        }
       }
     },
     email: {
       type: DataTypes.STRING,
-      unique: true,
+      unique: {
+        msg: 'Sorry, email already exists.'
+      },
       allowNull: false,
       validate: {
-        isEmail: true
+        isEmail: {
+          msg: 'Invalid email'
+        }
       }
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
       validate: {
-        notEmpty: true
+        notEmpty: true,
+        isMin(value) {
+          if (parseInt(value.length, 10) < 6) {
+            throw new Error('Password must be at least 6 characters.');
+          }
+        },
       }
+    },
+    token: {
+      type: DataTypes.STRING,
+      defaultValue: 'registered',
     },
     roleId: {
       type: DataTypes.INTEGER,
@@ -53,7 +76,6 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     classMethods: {
       associate(models) {
-        // associations can be defined here
         User.belongsTo(models.Role, {
           onDelete: 'CASCADE',
           foreignKey: 'roleId'
@@ -78,8 +100,10 @@ module.exports = (sequelize, DataTypes) => {
       beforeCreate(user) {
         user.hashPassword();
       },
-      beforeUpdate(user, options) {
-        user.hashPassword();
+      beforeUpdate(user) {
+        if (user._changed.password) {
+          user.hashPassword();
+        }
       }
     }
   });

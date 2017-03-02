@@ -2,17 +2,20 @@
 import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
-import config from '../config/config.json';
+import dotenv from 'dotenv';
+import * as dbConfig from '../config/config.json';
+
+dotenv.config();
 
 const basename = path.basename(module.filename);
 const env = process.env.NODE_ENV || 'development';
-config = config[env];
+const config = dbConfig[env];
 
 const db = {};
 let sequelize;
 
 if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable]);
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
   sequelize = new Sequelize(
     config.database, config.username, config.password, config
@@ -22,7 +25,6 @@ if (config.use_env_variable) {
 fs
   .readdirSync(__dirname)
   .filter(file =>
-    (file.indexOf('.') !== 0) &&
     (file !== basename) &&
     (file.slice(-3) === '.js')
   )

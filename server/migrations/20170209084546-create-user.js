@@ -29,6 +29,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
+      token: {
+        type: Sequelize.STRING,
+        defaultValue: 'registered',
+      },
       roleId: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -48,7 +52,7 @@ module.exports = {
       }
     });
   },
-  down(queryInterface, Sequelize) {
+  down(queryInterface) {
     return queryInterface.dropTable('Users');
   }
 };
