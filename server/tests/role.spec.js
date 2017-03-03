@@ -150,15 +150,29 @@ describe('Roles:', () => {
     });
   });
 
-  describe('Get role', () => {
+  describe('Get roles', () => {
     it('should allow an Admin User with VALID token get all Roles',
     (done) => {
       server.get('/roles')
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(200);
-        res.body.should.be.a.Array();
-        res.body.length.should.equal(3);
+        res.body.roles.rows.should.be.Array();
+        res.body.roles.count.should.equal(3);
+        done();
+      });
+    });
+
+    it('should return roles based on pagination.',
+    (done) => {
+      server.get('/roles?limit=1&offset=0')
+      .set({ 'x-access-token': adminToken })
+      .end((error, res) => {
+        should(res.status).equal(200);
+        res.body.roles.rows.should.be.Array();
+        res.body.roles.count.should.equal(3);
+        res.body.metaData.totalPages.should.equal(3);
+        res.body.metaData.currentPage.should.equal(1);
         done();
       });
     });
@@ -169,10 +183,10 @@ describe('Roles:', () => {
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(200);
-        should(res.body[0].id).equal(1);
-        should(res.body[0].title).equal('admin');
-        should(res.body[1].id).equal(2);
-        should(res.body[1].title).equal('regular');
+        should(res.body.roles.rows[0].id).equal(1);
+        should(res.body.roles.rows[0].title).equal('admin');
+        should(res.body.roles.rows[1].id).equal(2);
+        should(res.body.roles.rows[1].title).equal('regular');
         done();
       });
     });
@@ -196,7 +210,9 @@ describe('Roles:', () => {
         done();
       });
     });
+  });
 
+  describe('Get a Role', () => {
     it('should allow an Admin User with VALID token get a Role',
     (done) => {
       server.get(`/roles/${newRoleId}`)

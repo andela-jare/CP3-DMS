@@ -1,5 +1,7 @@
 import { Role } from '../../models';
 import ErrorStatus from '../helper/ErrorStatus';
+import Paginate from '../helper/paginate';
+import helper from '../middleware/helper';
 
 const Roles = {
   /**
@@ -9,9 +11,26 @@ const Roles = {
    * @returns {Object} - Returns response object
    */
   index(req, res) {
-    Role.findAll()
-    .then(roles => res.status(200)
-      .send(roles));
+    const query = {
+      limit: req.query.limit,
+      offset: req.query.offset
+    };
+
+    if (helper.limitOffset(req, res) === true) {
+      Role.findAndCountAll(query)
+      .then((roles) => {
+        const paginate = Paginate.paginator(req, roles);
+
+        res.status(200)
+          .send({
+            roles,
+            metaData: {
+              totalPages: paginate.totalPages,
+              currentPage: paginate.currentPage
+            }
+          });
+      });
+    }
   },
 
   /**

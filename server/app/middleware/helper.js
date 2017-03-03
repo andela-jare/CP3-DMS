@@ -12,7 +12,7 @@ export default {
     }
     return true;
   },
-  limitOffset(query, req, res) {
+  limitOffset(req, res) {
     const limitSuccess = this.limitHelper(req.query.limit, 1);
     if (!limitSuccess) {
       return res.status(400).send({
@@ -24,8 +24,8 @@ export default {
         message: 'Please enter a valid number starting from 0 for offset.'
       });
     }
-    query.limit = req.query.limit ? +req.query.limit : 10;
-    query.offset = req.query.offset ? +req.query.offset : 0;
+    req.query.limit = req.query.limit ? +req.query.limit : 10;
+    req.query.offset = req.query.offset ? +req.query.offset : 0;
     return true;
   },
   usersFields(fields) {

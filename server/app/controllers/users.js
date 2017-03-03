@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../../models';
 import helper from '../middleware/helper';
 import ErrorStatus from '../helper/ErrorStatus';
+import Paginate from '../helper/paginate';
 
 const Users = {
   /**
@@ -104,13 +105,26 @@ const Users = {
    * @returns {Object} Response object
    */
   allUsers(req, res) {
-    User.findAll({
+    const query = {
+      limit: req.query.limit,
+      offset: req.query.offset,
       attributes: helper.findUsersAttributes()
-    })
-    .then((users) => {
-      res.status(200)
-        .send(users);
-    });
+    };
+
+    if (helper.limitOffset(req, res) === true) {
+      User.findAndCountAll(query)
+      .then((users) => {
+        const paginate = Paginate.paginator(req, users);
+        res.status(200)
+          .send({
+            users,
+            metaData: {
+              totalPages: paginate.totalPages,
+              currentPage: paginate.currentPage
+            }
+          });
+      });
+    }
   },
 
   /**

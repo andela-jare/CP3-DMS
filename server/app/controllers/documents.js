@@ -1,6 +1,7 @@
 import { Document } from '../../models';
 import helper from '../middleware/helper';
 import ErrorStatus from '../helper/ErrorStatus';
+import Paginate from '../helper/paginate';
 
 const Documents = {
 
@@ -65,11 +66,19 @@ const Documents = {
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
 
-    if (helper.limitOffset(query, req, res) === true) {
-      Document.findAll(query)
-      .then((document) => {
+    if (helper.limitOffset(req, res) === true) {
+      Document.findAndCountAll(query)
+      .then((documents) => {
+        const paginate = Paginate.paginator(req, documents);
+
         res.status(200)
-          .send({ document });
+          .send({
+            documents,
+            metaData: {
+              totalPages: paginate.totalPages,
+              currentPage: paginate.currentPage
+            }
+          });
       });
     }
   },
@@ -126,10 +135,23 @@ const Documents = {
         }
       };
     }
-    if (helper.limitOffset(query, req, res) === true) {
-      Document.findAll(query)
-      .then(documents => res.status(200)
-        .send({ documents }));
+    if (helper.limitOffset(req, res) === true) {
+      query.limit = req.query.limit;
+      query.offset = req.query.offset;
+
+      Document.findAndCountAll(query)
+      .then((documents) => {
+        const paginate = Paginate.paginator(req, documents);
+
+        res.status(200)
+          .send({
+            documents,
+            metaData: {
+              totalPages: paginate.totalPages,
+              currentPage: paginate.currentPage
+            }
+          });
+      });
     }
   },
   /**
@@ -140,17 +162,26 @@ const Documents = {
    */
   search(req, res) {
     const search = req.query.search.trim();
-    if (helper.limitOffset(req.queryBuilder, req, res) === true) {
+    if (helper.limitOffset(req, res) === true) {
       Document.findAndCountAll(req.queryBuilder)
-      .then((docs) => {
-        if (!docs.count) {
+      .then((documents) => {
+        if (!documents.count) {
           return res.status(404)
             .send({
               message: `No results found for ${search}.`
             });
         }
+
+        const paginate = Paginate.paginator(req, documents);
+
         return res.status(200)
-          .send(docs);
+          .send({
+            documents,
+            metaData: {
+              totalPages: paginate.totalPages,
+              currentPage: paginate.currentPage
+            }
+          });
       })
       .catch(error => res.status(400)
         .send({ error }));

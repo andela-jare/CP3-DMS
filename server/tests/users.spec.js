@@ -253,13 +253,13 @@ describe('Users', () => {
         .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.should.be.Array();
-          should(res.body[0]).have.property('username');
-          should(res.body[0]).have.property('firstName');
-          should(res.body[0]).have.property('lastName');
-          should(res.body[0]).have.property('email');
-          should(res.body[0]).have.property('id');
-          should(res.body[0]).not.have.property('password');
+          res.body.users.rows.should.be.Array();
+          should(res.body.users.rows[0]).have.property('username');
+          should(res.body.users.rows[0]).have.property('firstName');
+          should(res.body.users.rows[0]).have.property('lastName');
+          should(res.body.users.rows[0]).have.property('email');
+          should(res.body.users.rows[0]).have.property('id');
+          should(res.body.users.rows[0]).not.have.property('password');
           done();
         });
     });
@@ -270,6 +270,19 @@ describe('Users', () => {
           res.status.should.equal(401);
           should(res.body.message)
           .equal('Authentication is required. No token provided.');
+          done();
+        });
+    });
+
+    it('should return users based on pagination', (done) => {
+      server.get('/users?limit=2&offset=3')
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.users.rows.should.be.Array();
+          res.body.metaData.totalPages.should.equal(5);
+          res.body.metaData.currentPage.should.equal(2);
+          res.body.users.rows.length.should.equal(2);
           done();
         });
     });

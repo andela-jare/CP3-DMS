@@ -140,9 +140,9 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.document.should.be.a.Array();
-          should(res.body.document[0].access).equal('private');
-          should(res.body.document.length).equal(2);
+          res.body.documents.rows.should.be.a.Array();
+          should(res.body.documents.rows[0].access).equal('private');
+          should(res.body.documents.count).equal(2);
           done();
         });
     });
@@ -162,8 +162,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.document.should.be.a.Array();
-          should(res.body.document.length).equal(2);
+          res.body.documents.rows.should.be.a.Array();
+          should(res.body.documents.count).equal(2);
           done();
         });
     });
@@ -174,9 +174,11 @@ describe('Document Api', () => {
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.document.should.be.a.Array();
-          should(res.body.document.length).equal(1);
-          should(res.body.document[0].access).equal('public');
+          res.body.documents.rows.should.be.a.Array();
+          res.body.metaData.totalPages.should.equal(1);
+          res.body.metaData.currentPage.should.equal(1);
+          should(res.body.documents.count).equal(1);
+          should(res.body.documents.rows[0].access).equal('public');
           done();
         });
     });
@@ -269,8 +271,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.should.be.a.Array();
-          res.body.documents.length.should.equal(2);
+          res.body.documents.rows.should.be.a.Array();
+          res.body.documents.count.should.equal(2);
           done();
         });
     });
@@ -281,23 +283,23 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.should.be.a.Array();
-          res.body.documents.length.should.equal(2);
-          res.body.documents[0].access.should.equal('public');
-          res.body.documents[1].access.should.equal('private');
+          res.body.documents.rows.should.be.a.Array();
+          res.body.documents.count.should.equal(2);
+          res.body.documents.rows[0].access.should.equal('public');
+          res.body.documents.rows[1].access.should.equal('private');
           done();
         });
     });
 
-    it('should return error if user is neither the owner of the id or an admin',
-    (done) => {
+    it(`should return only public documents if user is neither the owner 
+    or an admin`, (done) => {
       server.get(`/users/${userId}/documents`)
       .set({ 'x-access-token': user4Token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.should.be.a.Array();
-          res.body.documents.length.should.equal(1);
-          res.body.documents[0].access.should.equal('public');
+          res.body.documents.rows.should.be.a.Array();
+          res.body.documents.count.should.equal(1);
+          res.body.documents.rows[0].access.should.equal('public');
           done();
         });
     });
@@ -313,6 +315,51 @@ describe('Document Api', () => {
     });
   });
 
+  describe('Paginate', () => {
+    let numOfDocuments = 0;
+    let totalCount = 0;
+
+    it('should return documents based on pagination', (done) => {
+      server.get(`/users/${userId}/documents?limit=1&offset=1`)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.documents.rows.should.be.a.Array();
+          res.body.documents.rows.length.should.equal(1);
+          res.body.metaData.totalPages.should.equal(2);
+          res.body.metaData.currentPage.should.equal(2);
+          numOfDocuments = res.body.documents.rows.length;
+          totalCount = res.body.documents.count;
+          done();
+        });
+    });
+
+    it('should return one document', (done) => {
+      numOfDocuments.should.equal(1);
+      done();
+    });
+
+    it('should return two as the total number of documents', (done) => {
+      totalCount.should.equal(2);
+      done();
+    });
+
+    it('should return the first page of all pages', (done) => {
+      server.get(`/users/${userId}/documents?limit=1&offset=0`)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.documents.rows.should.be.a.Array();
+          res.body.documents.rows.length.should.equal(1);
+          res.body.metaData.totalPages.should.equal(2);
+          res.body.metaData.currentPage.should.equal(1);
+          numOfDocuments = res.body.documents.rows.length;
+          totalCount = res.body.documents.count;
+          done();
+        });
+    });
+  });
+
   describe('Search:', () => {
     it('should return all documents for user where search terms are matched',
     (done) => {
@@ -320,8 +367,22 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
       .end((err, res) => {
         res.status.should.equal(200);
-        res.body.rows.should.be.a.Array();
-        should(res.body.count).equal(1);
+        res.body.documents.rows.should.be.a.Array();
+        should(res.body.documents.count).equal(1);
+        done();
+      });
+    });
+
+    it('should results results based on matched terms and pagination.',
+    (done) => {
+      server.get('/documents/search?search=Doc 1 edit&limit=10&offset=0')
+      .set({ 'x-access-token': token })
+      .end((err, res) => {
+        res.status.should.equal(200);
+        res.body.documents.rows.should.be.a.Array();
+        res.body.metaData.currentPage.should.equal(1);
+        res.body.metaData.totalPages.should.equal(1);
+        should(res.body.documents.count).equal(1);
         done();
       });
     });
@@ -331,8 +392,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': adminToken })
       .end((err, res) => {
         res.status.should.equal(200);
-        res.body.rows.should.be.a.Array();
-        should(res.body.count).equal(1);
+        res.body.documents.rows.should.be.a.Array();
+        should(res.body.documents.count).equal(1);
         done();
       });
     });

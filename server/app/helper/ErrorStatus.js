@@ -1,6 +1,5 @@
 /**
  * @class ErrorStatus
- * @classdesc CRUD action responses
  */
 class ErrorStatus {
   /**
