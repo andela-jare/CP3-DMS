@@ -4,8 +4,12 @@ import Authenticate from '../middleware/authenticate';
 import UserAccess from '../middleware/userMiddleware';
 
 const user = express.Router();
+user.post('/users/create',
+  Authenticate.auth,
+  Authenticate.permitAdmin,
+  users.create);
 
-user.post('/users', UserAccess.userCreateAccess, users.create);
+user.post('/users', UserAccess.userCreateAccess, users.signUp);
 user.post('/login', users.login);
 user.post('/logout', Authenticate.auth, UserAccess.userLogout, users.logout);
 

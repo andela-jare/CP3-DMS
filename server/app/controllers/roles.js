@@ -1,7 +1,7 @@
 import { Role } from '../../models';
 import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
-import helper from '../middleware/helper';
+import helper from '../helper/helper';
 
 const Roles = {
   /**

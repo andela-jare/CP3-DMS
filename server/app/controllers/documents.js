@@ -1,5 +1,5 @@
 import { Document } from '../../models';
-import helper from '../middleware/helper';
+import helper from '../helper/helper';
 import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
 

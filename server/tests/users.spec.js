@@ -117,6 +117,47 @@ describe('Users', () => {
     });
   });
 
+  describe('Create user by Admin', () => {
+    it('should create a new user with valid attributes', (done) => {
+      server.post('/users/create')
+      .send(testData.createdByAdmin)
+      .set({ 'x-access-token': adminToken })
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .end((err, res) => {
+          should(res.body).not.have.property('token');
+          should(res.body).have.property('user');
+          done();
+        });
+    });
+
+    it('should create a new user with valid attributes', (done) => {
+      server.post('/users/create')
+      .send(testData.adminCreatedByAdmin)
+      .set({ 'x-access-token': adminToken })
+        .expect('Content-Type', /json/)
+        .expect(201)
+        .end((err, res) => {
+          should(res.body).not.have.property('token');
+          should(res.body).have.property('user');
+          done();
+        });
+    });
+
+    it('should not allow a regular user create a user', (done) => {
+      server.post('/users/create')
+      .send(testData.createdByAdmin)
+      .set({ 'x-access-token': token })
+        .expect('Content-Type', /json/)
+        .expect(403)
+        .end((err, res) => {
+          res.status.should.equal(403);
+          res.body.message.should.equal('You are not authorized!');
+          done();
+        });
+    });
+  });
+
   describe('on login', () => {
     it('should give token to created users', (done) => {
       server.post('/login')
@@ -280,9 +321,10 @@ describe('Users', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.users.rows.should.be.Array();
-          res.body.metaData.totalPages.should.equal(5);
+          res.body.metaData.totalPages.should.equal(6);
           res.body.metaData.currentPage.should.equal(2);
           res.body.users.rows.length.should.equal(2);
+          res.body.users.count.should.equal(11);
           done();
         });
     });

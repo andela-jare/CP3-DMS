@@ -137,6 +137,23 @@ module.exports = {
     lastName: faker.name.lastName(),
   },
 
+  createdByAdmin: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  },
+
+  adminCreatedByAdmin: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    roleId: 1
+  },
+
   badUser2: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),

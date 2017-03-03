@@ -1,7 +1,7 @@
 import db from '../../models';
 
 /**
- * class AuthStatus to autheticate users
+ * class RoleMiddleware to autheticate users
 */
 class RoleMiddleware {
   /**

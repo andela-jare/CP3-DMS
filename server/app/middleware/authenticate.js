@@ -60,5 +60,18 @@ class Authenticate {
         }
       });
   }
+
+   /**
+   * Method to genrate token
+   * @param {Object} user - User's object
+   * @return {String} - Returns jwt token for further authentication
+   */
+  static generateToken(user) {
+    const token = jwt.sign({
+      userId: user.id,
+      roleId: user.roleId
+    }, process.env.SECRET, { expiresIn: '24h' });
+    return token;
+  }
 }
 export default Authenticate;

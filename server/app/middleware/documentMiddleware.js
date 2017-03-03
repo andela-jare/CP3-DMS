@@ -1,8 +1,8 @@
 import db from '../../models';
-import helper from './helper';
+import helper from '../helper/helper';
 
 /**
- * class AuthStatus to autheticate users
+ * class DocumentAccess to autheticate users
 */
 class DocumentAccess {
   /**

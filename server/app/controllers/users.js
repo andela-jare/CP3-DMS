@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import { User } from '../../models';
-import helper from '../middleware/helper';
+import helper from '../helper/helper';
+import Authenticate from '../middleware/authenticate';
 import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
 
@@ -12,15 +12,11 @@ const Users = {
    * @param {Object} res - Response object
    * @returns {Object} - Returns response object
    */
-  create(req, res) {
+  signUp(req, res) {
     const query = helper.usersFields(req.body);
     User.create(query)
     .then((user) => {
-      const token = jwt.sign({
-        message: 'signedUp',
-        userId: user.id,
-        roleId: user.roleId
-      }, process.env.SECRET, { expiresIn: '24h' });
+      const token = Authenticate.generateToken(user);
 
       res.status(201)
         .send({
@@ -33,6 +29,28 @@ const Users = {
         });
     })
     .catch(error => ErrorStatus.queryFail(res, 400, error));
+  },
+
+  /**
+   * Create a new user
+   * @param {Object} req - Request object
+   * @param {Object} res - Response object
+   * @returns {Object} - Returns response object
+   */
+  create(req, res) {
+    User.create(req.body)
+    .then((user) => {
+      res.status(201)
+        .send({
+          message: 'You have successfully created a user!',
+          user: {
+            id: user.id,
+            email: user.email,
+            username: user.username
+          }
+        });
+    })
+     .catch(error => ErrorStatus.queryFail(res, 400, error));
   },
 
   /**
@@ -50,11 +68,7 @@ const Users = {
     .then((user) => {
       const correct = bcrypt.compareSync(req.body.password, user.password);
       if (correct) {
-        const token = jwt.sign({
-          message: 'loggedIn',
-          userId: user.id,
-          roleId: user.roleId
-        }, process.env.SECRET, { expiresIn: '24h' });
+        const token = Authenticate.generateToken(user);
 
         return user.update({ token })
         .then(() => {
