@@ -1,6 +1,7 @@
 import { Role } from '../../models';
+import ErrorStatus from '../helper/ErrorStatus';
 
-export default {
+const Roles = {
   /**
    * Get all roles
    * @param {Object} req request object
@@ -23,8 +24,7 @@ export default {
     Role.create(req.body)
     .then(role => res.status(201)
       .send(role))
-    .catch(error => res.status(400)
-      .send({ message: error.errors[0].message }));
+    .catch(error => ErrorStatus.queryFail(res, 400, error));
   },
 
    /**
@@ -101,3 +101,5 @@ export default {
       });
   }
 };
+
+export default Roles;

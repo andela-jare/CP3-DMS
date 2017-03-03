@@ -15,16 +15,20 @@ class Authenticate {
    * @return {void} - Returns void
    */
   static auth(req, res, next) {
-    const token = req.headers['x-access-token'] || req.body.token;
+    const token = req.headers['x-access-token'];
     if (token) {
       jwt.verify(token, process.env.SECRET, (error, decoded) => {
-        if (error) return res.status(401).send(error);
+        if (error) {
+          return res.status(401)
+            .send(error);
+        }
         db.User.findById(decoded.userId)
         .then((user) => {
-          if (!user.token) {
-            return res.status(401).send({
-              message: 'Please sign in or register to continue.'
-            });
+          if (user.token !== 'registered' && user.token !== token) {
+            return res.status(401)
+              .send({
+                message: 'Please sign in or register to continue.'
+              });
           }
           req.decoded = decoded;
           req.decoded.roleId = user.roleId;

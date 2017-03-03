@@ -2,8 +2,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../../models';
 import helper from '../middleware/helper';
+import ErrorStatus from '../helper/ErrorStatus';
 
-export default {
+const Users = {
   /**
    * Create a new user
    * @param {Object} req - Request object
@@ -30,10 +31,7 @@ export default {
           }
         });
     })
-    .catch(error => res.status(400)
-      .send({
-        message: error.errors[0].message
-      }));
+    .catch(error => ErrorStatus.queryFail(res, 400, error));
   },
 
   /**
@@ -90,16 +88,13 @@ export default {
   * @returns {Object} - Returns response object
   */
   logout(req, res) {
-    User.findById(req.decoded.userId)
-    .then((user) => {
-      user.update({ token: null })
+    req.user.update({ token: null })
       .then(() => res.status(200)
         .send({
           message: 'You have successfully logged out'
-        }));
-    })
-    .catch(error => res.status(500)
-      .send({ error }));
+        }))
+      .catch(error => res.status(500)
+        .send({ error }));
   },
 
   /**
@@ -146,40 +141,10 @@ export default {
    * @returns {Object} - Returns response object
    */
   update(req, res) {
-    let query = helper.usersFields(req.body);
-    User.findById(req.params.id)
-      .then((user) => {
-        if (!user) {
-          return res.status(404)
-            .send({ message: 'User not found.' });
-        } else if (helper.userOrAdmin(req.params.id, req)) {
-          return res.status(403)
-            .send({ message: 'You are not authorized.' });
-        }
-
-        if (helper.isAdmin(req.decoded.roleId)
-        && req.decoded.userId !== user.id) {
-          if (req.body.roleId) {
-            query = {
-              roleId: req.body.roleId
-            };
-          } else {
-            return res.status(400)
-              .send({
-                message: 'No role id provided.'
-              });
-          }
-        }
-
-        user.update(query, {
-          where: {
-            id: req.params.id,
-          }
-        })
-        .then((updatedUser) => {
-          res.status(200)
-            .send({ updatedUser });
-        });
+    req.user.update(req.queryBuilder)
+      .then((updatedUser) => {
+        res.status(200)
+          .send({ updatedUser });
       })
       .catch(error => res.status(400)
         .send({ error }));
@@ -192,30 +157,12 @@ export default {
    * @returns {Object} - Returns response object
    */
   destroy(req, res) {
-    User.findById(req.params.id)
-      .then((user) => {
-        if (!user) {
-          return res.status(404)
-            .send({ error: 'User does not exist' });
-        }
-
-        if (helper.userOrAdmin(req.params.id, req)) {
-          return res.status(403)
-            .send({ message: 'You are not authorized!' });
-        }
-
-        if (helper.isAdmin(user.roleId)) {
-          return res.status(403)
-            .send({
-              message: 'You can not delete an admin!'
-            });
-        }
-
-        user.destroy()
-        .then(() => res.status(200)
-          .send({
-            message: 'User deleted successfully.'
-          }));
-      });
+    req.user.destroy()
+      .then(() => res.status(200)
+        .send({
+          message: 'User deleted successfully.'
+        }));
   }
 };
+
+export default Users;

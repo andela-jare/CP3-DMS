@@ -66,6 +66,32 @@ describe('Users', () => {
         });
     });
 
+    it('should not allow a user sign up as an admin', (done) => {
+      testData.regularUser.roleId = 1;
+      server.post('/users')
+      .send(testData.regularUser)
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          res.status.should.equal(400);
+          res.body.message.should.equal('You can\'t sign up as an admin.');
+          done();
+        });
+    });
+
+    it('should not allow a user pass in an id as part data', (done) => {
+      testData.regularUser.id = 5;
+      server.post('/users')
+      .send(testData.regularUser)
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .end((err, res) => {
+          res.status.should.equal(400);
+          res.body.message.should.equal('Sorry, You can\'t pass an id.');
+          done();
+        });
+    });
+
     it('should fail when all parameters are not given', (done) => {
       server.post('/users')
       .send(testData.badUser)
@@ -99,6 +125,7 @@ describe('Users', () => {
         .expect(200)
         .end((err, res) => {
           should(res.body).have.property('token');
+          token = res.body.token;
           done();
         });
     });
@@ -201,7 +228,8 @@ describe('Users', () => {
         .end((err, res) => {
           res.status.should.equal(403);
           should(res.body).have.property('message');
-          should(res.body.message).equal('You are not authorized.');
+          should(res.body.message)
+            .equal('You are restricted from performing this action.');
           done();
         });
     });
@@ -281,7 +309,8 @@ describe('Users', () => {
         .set({ 'x-access-token': userToken7 })
         .end((err, res) => {
           res.status.should.equal(403);
-          res.body.message.should.equal('You are not authorized!');
+          res.body.message.should
+            .equal('You are restricted from performing this action.');
           done();
         });
     });

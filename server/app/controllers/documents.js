@@ -1,7 +1,8 @@
 import { Document } from '../../models';
 import helper from '../middleware/helper';
+import ErrorStatus from '../helper/ErrorStatus';
 
-export default {
+const Documents = {
 
   /**
    * Create a new document
@@ -18,10 +19,7 @@ export default {
     })
     .then(document => res.status(200)
       .send({ document }))
-    .catch(error => res.status(400)
-      .send({
-        message: error.errors[0].message
-      }));
+    .catch(error => ErrorStatus.queryFail(res, 400, error));
   },
 
   /**
@@ -66,6 +64,7 @@ export default {
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
+
     if (helper.limitOffset(query, req, res) === true) {
       Document.findAll(query)
       .then((document) => {
@@ -82,22 +81,9 @@ export default {
    * @returns {Object} - Returns response object
    */
   update(req, res) {
-    Document.findById(req.params.id)
-      .then((document) => {
-        if (!document) {
-          return res.status(404)
-            .send({ message: 'Document Not found.' });
-        }
-        if (!helper.isOwner(document, req)) {
-          return res.status(403)
-            .send({
-              message: 'You are not allowed to edit this document.'
-            });
-        }
-        document.update(req.body)
-        .then(updatedDocument => res.status(200)
-          .send(updatedDocument));
-      });
+    req.document.update(req.body, { plain: true })
+      .then(updatedDocument => res.status(200)
+        .send(updatedDocument));
   },
 
   /**
@@ -107,23 +93,16 @@ export default {
    * @returns {Object} - Returns response object
    */
   destroy(req, res) {
-    Document.findById(req.params.id)
-      .then((document) => {
-        if (!document) {
-          return res.status(404).send({ message: 'Document Not found' });
-        }
-        if (helper.userOrAdmin(document.ownerId, req)) {
-          return res.status(403)
-            .send({
-              message: 'This document does not belong to you.'
-            });
-        }
-        document.destroy()
-        .then(() => res.status(200)
-          .send({
-            message: 'Document successfully deleted!'
-          }));
-      });
+    const query = {
+      where: {
+        id: req.params.id
+      }
+    };
+    Document.destroy(query)
+      .then(() => res.status(200)
+        .send({
+          message: 'Document successfully deleted!'
+        }));
   },
 
   /**
@@ -161,42 +140,8 @@ export default {
    */
   search(req, res) {
     const search = req.query.search.trim();
-    let query = {
-      where: {
-        $and: [{
-          $or: {
-            title: {
-              $ilike: `%${search}%`
-            },
-            content: {
-              $ilike: `%${search}%`
-            }
-          }
-        }, {
-          $or: {
-            ownerId: req.decoded.userId,
-            access: 'public'
-          }
-        }
-        ]
-      }
-    };
-
-    if (helper.isAdmin(req.decoded.roleId)) {
-      query = { where: {
-        $or: {
-          title: {
-            $ilike: `%${search}%`
-          },
-          content: {
-            $ilike: `%${search}%`
-          }
-        }
-      } };
-    }
-    query.order = '"createdAt" DESC';
-    if (helper.limitOffset(query, req, res) === true) {
-      Document.findAndCountAll(query)
+    if (helper.limitOffset(req.queryBuilder, req, res) === true) {
+      Document.findAndCountAll(req.queryBuilder)
       .then((docs) => {
         if (!docs.count) {
           return res.status(404)
@@ -212,3 +157,5 @@ export default {
     }
   }
 };
+
+export default Documents;

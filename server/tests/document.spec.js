@@ -238,7 +238,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('should return error message if user is not authorized', (done) => {
+    it('should return error message if user is not logged in', (done) => {
       server.put(`/documents/${documentId1}`)
       .send(updateDocument)
         .end((err, res) => {
@@ -257,7 +257,7 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(403);
           res.body.message.should
-          .equal('You are not allowed to edit this document.');
+          .equal('You are restricted from performing this action.');
           done();
         });
     });
@@ -365,7 +365,7 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(404);
-          res.body.message.should.equal('Document Not found');
+          res.body.message.should.equal('Document Not found.');
           done();
         });
     });
@@ -377,7 +377,7 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(403);
           res.body.message.should
-          .equal('This document does not belong to you.');
+          .equal('You are restricted from performing this action.');
           done();
         });
     });
