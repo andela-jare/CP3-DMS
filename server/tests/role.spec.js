@@ -98,7 +98,7 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(403);
         res.body.message.should
-        .equal('You cannot edit admin or regular role.');
+        .equal('You cannot perform any action on admin or regular role.');
         done();
       });
     });
@@ -110,7 +110,7 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(403);
         res.body.message.should
-        .equal('You cannot edit admin or regular role.');
+        .equal('You cannot perform any action on admin or regular role.');
         done();
       });
     });
@@ -265,7 +265,7 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(403);
         res.body.message.should
-        .equal('You cannot delete admin or regular role.');
+        .equal('You cannot perform any action on admin or regular role.');
         done();
       });
     });
@@ -277,7 +277,7 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(403);
         res.body.message.should
-        .equal('You cannot delete admin or regular role.');
+        .equal('You cannot perform any action on admin or regular role.');
         done();
       });
     });

@@ -3,11 +3,10 @@
  */
 class Paginate {
   /**
-   * queryFail(400)
-   * @param {Object} res - response object
-   * @param {Number} code - status code
-   * @param {Object} error - sequelize error object
-   * @return {Object} res - response object
+   * paginator helps with paginating an array of result.
+   * @param {Object} req - request object
+   * @param {Object} entity - result from a model
+   * @return{void|Object} - returns object.
    */
   static paginator(req, entity) {
     let totalPages = 1;
