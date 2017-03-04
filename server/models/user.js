@@ -46,7 +46,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         isEmail: {
-          msg: 'Invalid email'
+          msg: 'Email address is invalid'
         }
       }
     },

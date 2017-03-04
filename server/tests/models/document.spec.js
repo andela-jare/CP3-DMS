@@ -1,6 +1,6 @@
 import should from 'should';
 import db from '../../models';
-import testData from '../helpers/specHelper';
+import userData from '../helpers/specHelper';
 
 describe('Document Model', () => {
   let userDocument;
@@ -9,23 +9,27 @@ describe('Document Model', () => {
   const emptyFields = ['title', 'content', 'access'];
 
   before((done) => {
-    db.User.create(testData.regularUser8)
+    db.User.create(userData.regular)
       .then((user) => {
         regularUser = user.dataValues;
         done();
       });
   });
-  after((done) => { db.User.destroy({ where: {} }); done(); });
+
+  after((done) => {
+    db.User.destroy({ where: {} });
+    done();
+  });
 
   describe('Create Document', () => {
     it('should create document', (done) => {
-      testData.document4.ownerRoleId = regularUser.roleId;
-      testData.document4.ownerId = regularUser.id;
-      db.Document.create(testData.document4)
+      userData.document4.ownerRoleId = regularUser.roleId;
+      userData.document4.ownerId = regularUser.id;
+      db.Document.create(userData.document4)
         .then((doc) => {
           userDocument = doc.dataValues;
-          should(doc.title).equal(testData.document4.title);
-          should(doc.content).equal(testData.document4.content);
+          should(doc.title).equal(userData.document4.title);
+          should(doc.content).equal(userData.document4.content);
           should(doc).have.property('createdAt');
           should(doc.ownerId).equal(regularUser.id);
           done();
@@ -36,7 +40,7 @@ describe('Document Model', () => {
   describe('Not Null Violation', () => {
     requiredFields.forEach((field) => {
       it('should return not null Violation message', (done) => {
-        const notNull = Object.assign({}, testData.document4);
+        const notNull = Object.assign({}, userData.document4);
         notNull[field] = null;
         db.Document.create(notNull)
           .then()
@@ -54,7 +58,7 @@ describe('Document Model', () => {
   describe('Empty String', () => {
     emptyFields.forEach((field) => {
       it('should return error if field is empty', (done) => {
-        const emptyString = Object.assign({}, testData.document4);
+        const emptyString = Object.assign({}, userData.document4);
         emptyString[field] = ' ';
         db.Document.create(emptyString)
           .then()
@@ -72,7 +76,7 @@ describe('Document Model', () => {
   describe('Access Violation', () => {
     it('should return error when access is not public or private',
     (done) => {
-      const invalidAccess = Object.assign({}, testData.document4);
+      const invalidAccess = Object.assign({}, userData.document4);
       invalidAccess.access = 'andela';
       db.Document.create(invalidAccess)
         .then()

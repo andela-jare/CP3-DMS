@@ -1,18 +1,18 @@
 import supertest from 'supertest';
 import should from 'should';
-import app from '../../server';
-import db from '../models';
-import testData from './helpers/specHelper';
+import app from '../../../server';
+import userData from '../helpers/specHelper';
+import db from '../../models';
 
 const server = supertest.agent(app);
-let token, adminToken, userToken7, userId, userId2, userId7, adminId;
+let token, adminToken, thirdToken, userId, secondId, thirdId, adminId;
 
 describe('Users', () => {
   before((done) => {
-    db.User.create(testData.adminUser)
+    db.User.create(userData.admin)
     .then(() => {
       server.post('/login')
-      .send(testData.adminUser6)
+      .send(userData.admin)
       .end((err, res) => {
         adminToken = res.body.token;
         adminId = res.body.user.id;
@@ -21,10 +21,15 @@ describe('Users', () => {
     });
   });
 
+  after((done) => {
+    db.User.destroy({ where: {} });
+    done();
+  });
+
   describe('on signup', () => {
     it('should create a new user with valid attributes', (done) => {
       server.post('/users')
-      .send(testData.regularUser)
+      .send(userData.regular)
         .expect('Content-Type', /json/)
         .expect(201)
         .end((err, res) => {
@@ -34,42 +39,43 @@ describe('Users', () => {
           userId = res.body.user.id;
         });
       server.post('/users')
-      .send(testData.regularUser2)
+      .send(userData.regular2)
         .expect('Content-Type', /json/)
         .expect(201)
         .end((err, res) => {
           should(res.body).have.property('token');
           should(res.body).have.property('user');
-          userId2 = res.body.user.id;
+          secondId = res.body.user.id;
         });
       server.post('/users')
-      .send(testData.regularUser7)
+      .send(userData.regular7)
         .expect('Content-Type', /json/)
         .expect(201)
         .end((err, res) => {
           should(res.body).have.property('token');
           should(res.body).have.property('user');
-          userId7 = res.body.user.id;
-          userToken7 = res.body.token;
+          thirdId = res.body.user.id;
+          thirdToken = res.body.token;
           done();
         });
     });
 
     it('should ensure unique a user is created each time', (done) => {
       server.post('/users')
-      .send(testData.regularUser)
+      .send(userData.regular)
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
+          res.body.message.should.equal('Sorry, username already exists.');
           res.status.should.equal(400);
           done();
         });
     });
 
     it('should not allow a user sign up as an admin', (done) => {
-      testData.regularUser.roleId = 1;
+      userData.regular.roleId = 1;
       server.post('/users')
-      .send(testData.regularUser)
+      .send(userData.regular)
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
@@ -79,10 +85,11 @@ describe('Users', () => {
         });
     });
 
-    it('should not allow a user pass in an id as part data', (done) => {
-      testData.regularUser.id = 5;
+    it('should not allow a user pass in an id as part of request body',
+    (done) => {
+      userData.regular.id = 5;
       server.post('/users')
-      .send(testData.regularUser)
+      .send(userData.regular)
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
@@ -94,18 +101,19 @@ describe('Users', () => {
 
     it('should fail when all parameters are not given', (done) => {
       server.post('/users')
-      .send(testData.badUser)
+      .send(userData.invalidEmail)
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
           should(res.body).have.property('message');
+          res.body.message.should.equal('Email address is invalid');
           done();
         });
     });
 
     it('should fail if password length is less than 6 characters', (done) => {
       server.post('/users')
-      .send(testData.badUser2)
+      .send(userData.badPassword)
         .expect('Content-Type', /json/)
         .expect(400)
         .end((err, res) => {
@@ -120,11 +128,11 @@ describe('Users', () => {
   describe('Create user by Admin', () => {
     it('should create a new user with valid attributes', (done) => {
       server.post('/users/create')
-      .send(testData.createdByAdmin)
+      .send(userData.createdByAdmin)
       .set({ 'x-access-token': adminToken })
         .expect('Content-Type', /json/)
-        .expect(201)
         .end((err, res) => {
+          should(res.status).equal(201);
           should(res.body).not.have.property('token');
           should(res.body).have.property('user');
           done();
@@ -133,20 +141,21 @@ describe('Users', () => {
 
     it('should create a new user with valid attributes', (done) => {
       server.post('/users/create')
-      .send(testData.adminCreatedByAdmin)
+      .send(userData.adminCreatedByAdmin)
       .set({ 'x-access-token': adminToken })
         .expect('Content-Type', /json/)
         .expect(201)
         .end((err, res) => {
           should(res.body).not.have.property('token');
           should(res.body).have.property('user');
+          should(res.body.user.roleId).equal(1);
           done();
         });
     });
 
     it('should not allow a regular user create a user', (done) => {
       server.post('/users/create')
-      .send(testData.createdByAdmin)
+      .send(userData.createdByAdmin)
       .set({ 'x-access-token': token })
         .expect('Content-Type', /json/)
         .expect(403)
@@ -161,7 +170,7 @@ describe('Users', () => {
   describe('on login', () => {
     it('should give token to created users', (done) => {
       server.post('/login')
-      .send(testData.regularUser)
+      .send(userData.regular)
         .expect('Content-Type', /json/)
         .expect(200)
         .end((err, res) => {
@@ -175,11 +184,10 @@ describe('Users', () => {
     (done) => {
       server.post('/login')
       .send({
-        username: testData.regularUser.username,
+        username: userData.regular.username,
         password: 'password12345'
       })
         .expect('Content-Type', /json/)
-        .expect(400)
         .end((err, res) => {
           res.status.should.equal(400);
           res.body.should.have.property('message');
@@ -191,11 +199,10 @@ describe('Users', () => {
 
     it('should return an error for a user yet to be created', (done) => {
       server.post('/login')
-      .send(testData.regularUser5)
+      .send(userData.regular5)
         .expect('Content-Type', /json/)
-        .expect(400)
         .end((err, res) => {
-          res.status.should.equal(400);
+          res.status.should.equal(404);
           res.body.should.have.property('message');
           res.body.message.should.equal('User does not exist.');
           done();
@@ -207,6 +214,11 @@ describe('Users', () => {
     const newAttributes = {
       firstName: 'John', lastName: 'Doe', email: 'johndoe@mail.com'
     };
+    const newAttributes2 = {
+      firstName: 'newJohn', lastName: 'newDoe', roleId: 1
+    };
+    let updatedUser;
+
     it('should update the user attributes', (done) => {
       server.put(`/users/${userId}`)
         .set({ 'x-access-token': token })
@@ -226,10 +238,7 @@ describe('Users', () => {
         });
     });
 
-    it('should allow an admin update only roles', (done) => {
-      const newAttributes2 = {
-        firstName: 'newJohn', lastName: 'newDoe', roleId: 1
-      };
+    it('should allow an admin update only roles of other users', (done) => {
       server.put(`/users/${userId}`)
         .set({ 'x-access-token': adminToken })
         .send(newAttributes2)
@@ -238,14 +247,21 @@ describe('Users', () => {
           should(res.body.updatedUser.roleId)
             .be
             .exactly(newAttributes2.roleId);
-          should(res.body.updatedUser.firstName)
-            .not
-            .exactly(newAttributes2.firstName);
-          should(res.body.updatedUser.lastName)
-            .not
-            .exactly(newAttributes2.lastName);
+
+          updatedUser = res.body.updatedUser;
           done();
         });
+    });
+
+    it(`should not allow an admin update other users attributes 
+    other than role id`, (done) => {
+      should(updatedUser.firstName)
+        .not
+        .exactly(newAttributes2.firstName);
+      should(updatedUser.lastName)
+        .not
+        .exactly(newAttributes2.lastName);
+      done();
     });
 
     it('should return NOT FOUND for an invalid id', (done) => {
@@ -262,8 +278,8 @@ describe('Users', () => {
 
     it(`should return not authorized message if a regular user is trying to 
     update another user`, (done) => {
-      server.put(`/users/${adminId}`)
-        .set({ 'x-access-token': userToken7 })
+      server.put(`/users/${userId}`)
+        .set({ 'x-access-token': thirdToken })
         .send(newAttributes)
         .expect(401)
         .end((err, res) => {
@@ -275,7 +291,7 @@ describe('Users', () => {
         });
     });
 
-    it('should return unauthorized for a user not logged in.', (done) => {
+    it('should allow a user not logged in to perform update.', (done) => {
       server.put(`/users/${userId}`)
         .send(newAttributes)
         .expect(401)
@@ -295,12 +311,7 @@ describe('Users', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.users.rows.should.be.Array();
-          should(res.body.users.rows[0]).have.property('username');
-          should(res.body.users.rows[0]).have.property('firstName');
-          should(res.body.users.rows[0]).have.property('lastName');
-          should(res.body.users.rows[0]).have.property('email');
-          should(res.body.users.rows[0]).have.property('id');
-          should(res.body.users.rows[0]).not.have.property('password');
+          res.body.users.count.should.equal(6);
           done();
         });
     });
@@ -321,17 +332,17 @@ describe('Users', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.users.rows.should.be.Array();
-          res.body.metaData.totalPages.should.equal(6);
+          res.body.metaData.totalPages.should.equal(3);
           res.body.metaData.currentPage.should.equal(2);
           res.body.users.rows.length.should.equal(2);
-          res.body.users.count.should.equal(11);
+          res.body.users.count.should.equal(6);
           done();
         });
     });
   });
 
   describe('Find user', () => {
-    it('get a user with an id', (done) => {
+    it('get a user by it\'s id', (done) => {
       server.get(`/users/${userId}`)
         .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -355,13 +366,35 @@ describe('Users', () => {
           done();
         });
     });
+
+    it('should deny access to a user not logged in ', (done) => {
+      server.get('/users')
+        .end((err, res) => {
+          res.status.should.equal(401);
+          should(res.body.message)
+          .equal('Authentication is required. No token provided.');
+          done();
+        });
+    });
   });
 
   describe('Delete user', () => {
-    it('should not allow a regular user delete other user\'s account',
+    it('should not allow a regular user delete an admin account',
     (done) => {
       server.delete(`/users/${adminId}`)
-        .set({ 'x-access-token': userToken7 })
+        .set({ 'x-access-token': thirdToken })
+        .end((err, res) => {
+          res.status.should.equal(403);
+          res.body.message.should
+            .equal('You are restricted from performing this action.');
+          done();
+        });
+    });
+
+    it('should not allow a regular user delete other user\'s account',
+    (done) => {
+      server.delete(`/users/${userId}`)
+        .set({ 'x-access-token': thirdToken })
         .end((err, res) => {
           res.status.should.equal(403);
           res.body.message.should
@@ -381,8 +414,8 @@ describe('Users', () => {
     });
 
     it('should be able to delete own account', (done) => {
-      server.delete(`/users/${userId7}`)
-        .set({ 'x-access-token': userToken7 })
+      server.delete(`/users/${thirdId}`)
+        .set({ 'x-access-token': thirdToken })
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.message.should.equal('User deleted successfully.');
@@ -391,7 +424,7 @@ describe('Users', () => {
     });
 
     it('should allow an admin delete any account', (done) => {
-      server.delete(`/users/${userId2}`)
+      server.delete(`/users/${secondId}`)
         .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);
@@ -404,13 +437,22 @@ describe('Users', () => {
     (done) => {
       server.delete('/users/100')
         .set({ 'x-access-token': token })
-        .expect(404, done);
+        .expect(404)
+        .end((err, res) => {
+          res.body.message.should.equal('User Not found.');
+          done();
+        });
     });
 
-    it('should return not authenticated status for user not logged in.',
+    it('should return not authenticated for user not logged in.',
     (done) => {
       server.delete(`/users/${userId}`)
-        .expect(401, done);
+        .expect(401)
+        .end((err, res) => {
+          res.body.message.should
+          .equal('Authentication is required. No token provided.');
+          done();
+        });
     });
   });
 

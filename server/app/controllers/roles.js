@@ -53,19 +53,17 @@ const Roles = {
    * @returns {Object} - Returns response object
    */
   find(req, res) {
-    // Role.findById(req.params.id)
-    //   .then((role) => {
-    //     if (!role) {
-    //       return res.status(404)
-    //         .send({
-    //           message: `Role with id: ${req.params.id} not found.`
-    //         });
-    //     }
-    //     res.status(200)
-    //       .send(role);
-    //   });
-    res.status(200)
-      .send(req.role);
+    Role.findById(req.params.id)
+      .then((role) => {
+        if (!role) {
+          return res.status(404)
+            .send({
+              message: `Role with id: ${req.params.id} not found.`
+            });
+        }
+        res.status(200)
+          .send(role);
+      });
   },
 
   /**

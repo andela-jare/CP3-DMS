@@ -46,7 +46,8 @@ const Users = {
           user: {
             id: user.id,
             email: user.email,
-            username: user.username
+            username: user.username,
+            roleId: user.roleId
           }
         });
     })
@@ -89,7 +90,7 @@ const Users = {
           message: 'Incorrect username and password combination!'
         });
     })
-    .catch(() => res.status(400)
+    .catch(() => res.status(404)
       .send({
         message: 'User does not exist.'
       }));

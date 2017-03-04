@@ -21,7 +21,7 @@ module.exports = {
     password: faker.internet.password(),
   },
 
-  adminUser: {
+  admin: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -66,7 +66,7 @@ module.exports = {
     roleId: 1
   },
 
-  regularUser: {
+  regular: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -74,7 +74,7 @@ module.exports = {
     password: faker.internet.password()
   },
 
-  regularUser2: {
+  regular2: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -114,7 +114,7 @@ module.exports = {
     password: faker.internet.password(),
   },
 
-  regularUser7: {
+  regular7: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -130,7 +130,7 @@ module.exports = {
     password: faker.internet.password(),
   },
 
-  badUser: {
+  invalidEmail: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     email: 'iambademail',
@@ -154,7 +154,7 @@ module.exports = {
     roleId: 1
   },
 
-  badUser2: {
+  badPassword: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -191,13 +191,13 @@ module.exports = {
     content: faker.lorem.paragraph()
   },
 
-  document2: {
+  privateDocument: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph(),
     access: 'private'
   },
 
-  document3: {
+  document2: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph()
   },
@@ -233,5 +233,13 @@ module.exports = {
 
   newRole4: {
     title: 'guest'
+  },
+
+  updateDocument: {
+    title: 'Doc 1 edit',
+  },
+
+  updateDocument2: {
+    title: 'Not valid',
   }
 };

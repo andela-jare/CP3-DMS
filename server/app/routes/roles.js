@@ -17,7 +17,6 @@ role.put('/:id',
 role.get('/:id',
   Authenticate.auth,
   Authenticate.permitAdmin,
-  RoleMiddleware.findRole,
   roles.find);
 
 role.delete('/:id',

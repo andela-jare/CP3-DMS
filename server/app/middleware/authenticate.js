@@ -20,7 +20,9 @@ class Authenticate {
       jwt.verify(token, process.env.SECRET, (error, decoded) => {
         if (error) {
           return res.status(401)
-            .send(error);
+            .send({
+              message: 'Invalid token. Login or resgister to continue'
+            });
         }
         db.User.findById(decoded.userId)
         .then((user) => {
