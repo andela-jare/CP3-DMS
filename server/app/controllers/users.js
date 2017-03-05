@@ -1,9 +1,10 @@
 import bcrypt from 'bcrypt';
 import { User } from '../../models';
-import helper from '../helper/helper';
+import utility from '../helper/utility';
 import Authenticate from '../middleware/authenticate';
 import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
+import UserHelper from '../helper/users';
 
 const Users = {
   /**
@@ -13,7 +14,7 @@ const Users = {
    * @returns {Object} - Returns response object
    */
   signUp(req, res) {
-    const query = helper.usersFields(req.body);
+    const query = UserHelper.usersFields(req.body);
     User.create(query)
     .then((user) => {
       const token = Authenticate.generateToken(user);
@@ -123,10 +124,10 @@ const Users = {
     const query = {
       limit: req.query.limit,
       offset: req.query.offset,
-      attributes: helper.findUsersAttributes()
+      attributes: UserHelper.findUsersAttributes()
     };
 
-    if (helper.limitOffset(req, res) === true) {
+    if (utility.limitOffset(req, res) === true) {
       User.findAndCountAll(query)
       .then((users) => {
         const paginate = Paginate.paginator(req, users);
@@ -150,7 +151,7 @@ const Users = {
   */
   findUser(req, res) {
     User.findById(req.params.id, {
-      attributes: helper.findUsersAttributes()
+      attributes: UserHelper.findUsersAttributes()
     })
     .then((user) => {
       if (!user) {

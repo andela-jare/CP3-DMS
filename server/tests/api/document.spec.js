@@ -9,8 +9,9 @@ let token;
 let adminToken;
 let secondToken;
 let userId;
-let documentId1;
-let documentId2;
+let publicDocumentId;
+let privateDocumentId;
+let documentWithRoleAccessId;
 
 describe('Document Api', () => {
   before((done) => {
@@ -62,9 +63,9 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.body.should.have.property('document');
           should(res.body.document.access).equal('public');
-          documentId1 = res.body.document.id;
-          server.post('/documents')
+          publicDocumentId = res.body.document.id;
 
+          server.post('/documents')
           .send(userData.document2)
           .set({ 'x-access-token': secondToken })
             .end((err, res) => {
@@ -117,6 +118,18 @@ describe('Document Api', () => {
         });
     });
 
+    it('should be able to create a document with role access', (done) => {
+      server.post('/documents')
+        .send(userData.documentWithRoleAccess)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.body.should.have.property('document');
+          should(res.body.document.access).equal('role');
+          documentWithRoleAccessId = res.body.document.id;
+          done();
+        });
+    });
+
     it('should be able to create a private document', (done) => {
       server.post('/documents')
       .send(userData.privateDocument)
@@ -124,7 +137,7 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.body.should.have.property('document');
           res.body.document.access.should.equal('private');
-          documentId2 = res.body.document.id;
+          privateDocumentId = res.body.document.id;
           done();
         });
     });
@@ -132,18 +145,18 @@ describe('Document Api', () => {
 
   describe('Get a document', () => {
     it('should return a document matching an id', (done) => {
-      server.get(`/documents/${documentId1}`)
+      server.get(`/documents/${publicDocumentId}`)
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.should.have.property('document');
-          res.body.document.id.should.equal(documentId1);
+          res.body.document.id.should.equal(publicDocumentId);
           done();
         });
     });
 
     it('should return a private document to an admin', (done) => {
-      server.get(`/documents/${documentId2}`)
+      server.get(`/documents/${privateDocumentId}`)
       .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);
@@ -152,9 +165,32 @@ describe('Document Api', () => {
         });
     });
 
+    it('should return public document to a user who does not own the document',
+    (done) => {
+      server.get(`/documents/${publicDocumentId}`)
+      .set({ 'x-access-token': secondToken })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.document.access.should.equal('public');
+          done();
+        });
+    });
+
+    it(`should return document with role access where access is role and 
+      both the owner and viewer have the same role`,
+    (done) => {
+      server.get(`/documents/${documentWithRoleAccessId}`)
+      .set({ 'x-access-token': secondToken })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          res.body.document.access.should.equal('role');
+          done();
+        });
+    });
+
     it(`should not return private document to a user 
     who does NOT own the document`, (done) => {
-      server.get(`/documents/${documentId2}`)
+      server.get(`/documents/${privateDocumentId}`)
       .set({ 'x-access-token': secondToken })
         .end((err, res) => {
           res.status.should.equal(403);
@@ -174,7 +210,7 @@ describe('Document Api', () => {
     });
 
     it('should allow a user not logged in to get a document', (done) => {
-      server.get(`/documents/${documentId2}`)
+      server.get(`/documents/${privateDocumentId}`)
         .end((err, res) => {
           res.status.should.equal(401);
           res.body.message.should
@@ -192,7 +228,7 @@ describe('Document Api', () => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
           should(res.body.documents.rows[0].access).equal('private');
-          should(res.body.documents.count).equal(3);
+          should(res.body.documents.count).equal(4);
           done();
         });
     });
@@ -213,7 +249,7 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
-          should(res.body.documents.count).equal(3);
+          should(res.body.documents.count).equal(4);
           done();
         });
     });
@@ -227,8 +263,8 @@ describe('Document Api', () => {
           res.body.documents.rows.should.be.a.Array();
           res.body.metaData.totalPages.should.equal(1);
           res.body.metaData.currentPage.should.equal(1);
-          should(res.body.documents.count).equal(2);
-          should(res.body.documents.rows[0].access).equal('public');
+          should(res.body.documents.count).equal(3);
+          should(res.body.documents.rows[0].access).equal('role');
           should(res.body.documents.rows[1].access).equal('public');
           done();
         });
@@ -262,8 +298,22 @@ describe('Document Api', () => {
   });
 
   describe('Edit Document', () => {
+    it('should allow an admin update any user\'s document.', (done) => {
+      server.put(`/documents/${privateDocumentId}`)
+      .send(userData.updateDocument)
+      .set({ 'x-access-token': adminToken })
+        .end((err, res) => {
+          res.status.should.equal(200);
+          should(res.body.title)
+            .be.exactly(userData.updateDocument.title);
+          done();
+        });
+    });
+
     it('should edit document the user has access to.', (done) => {
-      server.put(`/documents/${documentId2}`)
+      userData.updateDocument.title = 'Doc 1 edit';
+
+      server.put(`/documents/${privateDocumentId}`)
       .send(userData.updateDocument)
       .set({ 'x-access-token': token })
         .end((err, res) => {
@@ -286,7 +336,7 @@ describe('Document Api', () => {
     });
 
     it('should not allow a user is not logged in to update.', (done) => {
-      server.put(`/documents/${documentId1}`)
+      server.put(`/documents/${publicDocumentId}`)
       .send(userData.updateDocument)
         .end((err, res) => {
           res.status.should.equal(401);
@@ -298,7 +348,7 @@ describe('Document Api', () => {
 
     it('should return error message if user is not the owner of the document',
     (done) => {
-      server.put(`/documents/${documentId1}`)
+      server.put(`/documents/${publicDocumentId}`)
       .send(userData.updateDocument2)
       .set({ 'x-access-token': secondToken })
         .end((err, res) => {
@@ -317,7 +367,7 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
-          res.body.documents.count.should.equal(2);
+          res.body.documents.count.should.equal(3);
           done();
         });
     });
@@ -329,15 +379,16 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
-          res.body.documents.count.should.equal(2);
+          res.body.documents.count.should.equal(3);
           res.body.documents.rows[0].access.should.equal('public');
-          res.body.documents.rows[1].access.should.equal('private');
+          res.body.documents.rows[1].access.should.equal('role');
           done();
         });
     });
 
-    it(`should return only public documents if user is neither the owner 
-    nor an admin`, (done) => {
+    it(`should return public documents and where document access is role 
+    if user is neither the owner nor an admin`,
+    (done) => {
       server.get(`/users/${userId}/documents`)
       .set({ 'x-access-token': secondToken })
         .end((err, res) => {
@@ -370,7 +421,7 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
-          res.body.metaData.totalPages.should.equal(2);
+          res.body.metaData.totalPages.should.equal(3);
           res.body.metaData.currentPage.should.equal(2);
           numOfDocuments = res.body.documents.rows.length;
           totalCount = res.body.documents.count;
@@ -384,7 +435,7 @@ describe('Document Api', () => {
     });
 
     it('should return two as the total number of documents', (done) => {
-      totalCount.should.equal(2);
+      totalCount.should.equal(3);
       done();
     });
 
@@ -396,7 +447,7 @@ describe('Document Api', () => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
           res.body.documents.rows.length.should.equal(1);
-          res.body.metaData.totalPages.should.equal(2);
+          res.body.metaData.totalPages.should.equal(3);
           res.body.metaData.currentPage.should.equal(1);
           done();
         });
@@ -456,7 +507,7 @@ describe('Document Api', () => {
 
   describe('Delete', () => {
     it('should delete user document', (done) => {
-      server.delete(`/documents/${documentId1}`)
+      server.delete(`/documents/${publicDocumentId}`)
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
@@ -477,7 +528,7 @@ describe('Document Api', () => {
 
     it('should not allow a user who is not the owner delete document',
     (done) => {
-      server.delete(`/documents/${documentId2}`)
+      server.delete(`/documents/${privateDocumentId}`)
       .set({ 'x-access-token': secondToken })
         .end((err, res) => {
           res.status.should.equal(403);
@@ -488,7 +539,7 @@ describe('Document Api', () => {
     });
 
     it('admin should be able to delete any document', (done) => {
-      server.delete(`/documents/${documentId2}`)
+      server.delete(`/documents/${privateDocumentId}`)
       .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);
@@ -498,7 +549,7 @@ describe('Document Api', () => {
     });
 
     it('should return error message if user is not logged in.', (done) => {
-      server.delete(`/documents/${documentId1}`)
+      server.delete(`/documents/${publicDocumentId}`)
         .end((err, res) => {
           res.status.should.equal(401);
           should(res.body.message)

@@ -1,7 +1,9 @@
-import { Document } from '../../models';
-import helper from '../helper/helper';
+import { Document, User } from '../../models';
+import utility from '../helper/utility';
 import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
+import DocumentHelper from '../helper/documents';
+import UserHelper from '../helper/users';
 
 const Documents = {
 
@@ -30,7 +32,15 @@ const Documents = {
    * @returns {Object} - Returns response object
    */
   getDocument(req, res) {
-    Document.findById(req.params.id)
+    Document.findOne({
+      where: {
+        id: req.params.id
+      },
+      include: [{
+        model: User,
+        attributes: ['roleId']
+      }]
+    })
       .then((document) => {
         if (!document) {
           return res.status(404)
@@ -38,14 +48,16 @@ const Documents = {
               message: 'Document not found.',
             });
         }
-        if (helper.documentAccess(document, req)) {
+        if (DocumentHelper.documentAccess(document, req) ||
+          DocumentHelper.isRoleAccess(document, req)) {
           return res.status(200)
             .send({ document });
         }
 
         res.status(403)
           .send({ message: 'You are unauthorized.' });
-      });
+      })
+      .catch(error => res.status(400).send(error));
   },
 
   /**
@@ -59,14 +71,16 @@ const Documents = {
       where: {
         $or: [
           { ownerId: { $eq: req.decoded.userId } },
-          { access: { $eq: 'public' } }
+          { access: {
+            $in: ['public', 'role']
+          } }
         ]
       }
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
 
-    if (helper.limitOffset(req, res) === true) {
+    if (utility.limitOffset(req, res) === true) {
       Document.findAndCountAll(query)
       .then((documents) => {
         const paginate = Paginate.paginator(req, documents);
@@ -127,7 +141,7 @@ const Documents = {
         ownerId: id
       }
     };
-    if (helper.norUserAdmin(req)) {
+    if (UserHelper.norUserAdmin(req)) {
       query = {
         where: {
           ownerId: id,
@@ -135,7 +149,7 @@ const Documents = {
         }
       };
     }
-    if (helper.limitOffset(req, res) === true) {
+    if (utility.limitOffset(req, res) === true) {
       query.limit = req.query.limit;
       query.offset = req.query.offset;
 
@@ -162,7 +176,7 @@ const Documents = {
    */
   search(req, res) {
     const search = req.query.search.trim();
-    if (helper.limitOffset(req, res) === true) {
+    if (utility.limitOffset(req, res) === true) {
       Document.findAndCountAll(req.queryBuilder)
       .then((documents) => {
         if (!documents.count) {

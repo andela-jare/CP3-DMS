@@ -70,7 +70,7 @@ describe('Document Model', () => {
   });
 
   describe('Access Violation', () => {
-    it('should return error when access is not public or private',
+    it('should return error when access is not public, private or role',
     (done) => {
       userData.document.access = 'andela';
 
@@ -78,7 +78,7 @@ describe('Document Model', () => {
         .then()
         .catch((error) => {
           should(error.errors[0].message)
-            .equal('access can only be public or private.');
+            .equal('access can only be public, private or role.');
           done();
         });
     });

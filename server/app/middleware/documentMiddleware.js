@@ -1,5 +1,6 @@
 import db from '../../models';
-import helper from '../helper/helper';
+import DocumentHelper from '../helper/documents';
+import UserHelper from '../helper/users';
 
 /**
  * class DocumentAccess to autheticate users
@@ -22,8 +23,8 @@ class DocumentAccess {
             .send({ message: 'Document Not found.' });
         }
 
-        if (req.decoded.userId !== document.ownerId
-        && req.decoded.roleId !== 1) {
+        if (!DocumentHelper.isOwner(document, req)
+          && !(UserHelper.isAdmin(req.decoded.roleId))) {
           return res.status(403)
             .send({
               message: 'You are restricted from performing this action.'
@@ -59,14 +60,19 @@ class DocumentAccess {
         }, {
           $or: {
             ownerId: req.decoded.userId,
-            access: 'public'
+            access: {
+              $in: [
+                'public',
+                'role'
+              ]
+            }
           }
         }
         ]
       }
     };
 
-    if (helper.isAdmin(req.decoded.roleId)) {
+    if (UserHelper.isAdmin(req.decoded.roleId)) {
       req.queryBuilder = { where: {
         $or: {
           title: {

@@ -1,5 +1,5 @@
 import express from 'express';
-import { roles } from '../controllers';
+import roles from '../controllers/roles';
 import Authenticate from '../middleware/authenticate';
 import RoleMiddleware from '../middleware/roleMiddleware';
 

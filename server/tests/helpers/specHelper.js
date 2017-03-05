@@ -202,6 +202,12 @@ module.exports = {
     content: faker.lorem.paragraph()
   },
 
+  documentWithRoleAccess: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph(),
+    access: 'role'
+  },
+
   document4: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph()
@@ -242,7 +248,7 @@ module.exports = {
   },
 
   updateDocument: {
-    title: 'Doc 1 edit',
+    title: 'Changed by admin',
   },
 
   updateDocument2: {

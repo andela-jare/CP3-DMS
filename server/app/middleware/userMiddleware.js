@@ -1,9 +1,9 @@
 import db from '../../models';
-import helper from '../helper/helper';
+import UserHelper from '../helper/users';
 
 /**
- * class UserAccess to autheticate users
-*/
+ * class UserAccess as middleware for user's controllers
+ */
 class UserAccess {
   /**
    * Method to authenticate a user before proceeding
@@ -22,14 +22,14 @@ class UserAccess {
             .send({ message: 'User Not found.' });
         }
 
-        if (req.decoded.userId !== user.id && req.decoded.roleId !== 1) {
+        if (UserHelper.userOrAdmin(req)) {
           return res.status(403)
             .send({
               message: 'You are restricted from performing this action.'
             });
         }
 
-        if (helper.isAdmin(user.roleId)) {
+        if (UserHelper.isAdmin(user.roleId)) {
           return res.status(403)
             .send({
               message: 'You can not delete an admin!'
@@ -58,15 +58,15 @@ class UserAccess {
             .send({ message: 'User not found.' });
         }
 
-        if (req.decoded.userId !== user.id && req.decoded.roleId !== 1) {
+        if (UserHelper.userOrAdmin(req)) {
           return res.status(403)
             .send({
               message: 'You are restricted from performing this action.'
             });
         }
 
-        req.queryBuilder = helper.usersFields(req.body);
-        if (helper.isAdmin(req.decoded.roleId)
+        req.queryBuilder = UserHelper.usersFields(req.body);
+        if (UserHelper.isAdmin(req.decoded.roleId)
         && req.decoded.userId !== user.id) {
           if (req.body.roleId) {
             req.queryBuilder = {
@@ -102,7 +102,7 @@ class UserAccess {
         });
     }
 
-    if (req.body.roleId === 1) {
+    if (UserHelper.isAdmin(req.body.roleId)) {
       return res.status(400)
         .send({
           message: 'You can\'t sign up as an admin.'

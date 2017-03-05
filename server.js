@@ -24,7 +24,7 @@ app.use('/roles', routes.roleRoutes);
 
 // Setup a default catch-all route that sends back a welcome message.
 app.get('*', (req, res) => res.status(200).send({
-  message: 'Welcome to Document management',
+  message: 'Welcome to Document Management System!',
 }));
 
 if (!module.parent) {

@@ -1,7 +1,7 @@
 import { Role } from '../../models';
 import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
-import helper from '../helper/helper';
+import utility from '../helper/utility';
 
 const Roles = {
   /**
@@ -16,7 +16,7 @@ const Roles = {
       offset: req.query.offset
     };
 
-    if (helper.limitOffset(req, res) === true) {
+    if (utility.limitOffset(req, res) === true) {
       Role.findAndCountAll(query)
       .then((roles) => {
         const paginate = Paginate.paginator(req, roles);

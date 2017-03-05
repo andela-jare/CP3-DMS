@@ -23,8 +23,8 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       validate: {
         isIn: {
-          args: [['private', 'public']],
-          msg: 'access can only be public or private.'
+          args: [['private', 'public', 'role']],
+          msg: 'access can only be public, private or role.'
         }
       }
     },
