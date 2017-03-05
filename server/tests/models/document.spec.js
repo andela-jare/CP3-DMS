@@ -6,12 +6,12 @@ describe('Document Model', () => {
   let userDocument;
   let regularUser;
   const requiredFields = ['title', 'content'];
-  const emptyFields = ['title', 'content', 'access'];
+  const emptyFields = ['title', 'content'];
 
   before((done) => {
     db.User.create(userData.regular)
       .then((user) => {
-        regularUser = user.dataValues;
+        regularUser = user;
         done();
       });
   });
@@ -23,15 +23,14 @@ describe('Document Model', () => {
 
   describe('Create Document', () => {
     it('should create document', (done) => {
-      userData.document4.ownerRoleId = regularUser.roleId;
-      userData.document4.ownerId = regularUser.id;
-      db.Document.create(userData.document4)
-        .then((doc) => {
-          userDocument = doc.dataValues;
-          should(doc.title).equal(userData.document4.title);
-          should(doc.content).equal(userData.document4.content);
-          should(doc).have.property('createdAt');
-          should(doc.ownerId).equal(regularUser.id);
+      userData.document.ownerId = regularUser.id;
+      db.Document.create(userData.document)
+        .then((document) => {
+          userDocument = document;
+          should(document.title).equal(userData.document.title);
+          should(document.content).equal(userData.document.content);
+          should(document).have.property('createdAt');
+          should(document.ownerId).equal(userData.document.ownerId);
           done();
         });
     });
@@ -40,15 +39,13 @@ describe('Document Model', () => {
   describe('Not Null Violation', () => {
     requiredFields.forEach((field) => {
       it('should return not null Violation message', (done) => {
-        const notNull = Object.assign({}, userData.document4);
-        notNull[field] = null;
-        db.Document.create(notNull)
+        const nullField = Object.assign({}, userData.document);
+        nullField[field] = null;
+
+        db.Document.create(nullField)
           .then()
           .catch((error) => {
             should(error.errors[0].message).equal(`${field} cannot be null`);
-            should(error.errors[0].type).equal('notNull Violation');
-            should(error.errors[0].path).equal(field);
-            should(error.errors[0].value).equal(null);
             done();
           });
       });
@@ -58,15 +55,14 @@ describe('Document Model', () => {
   describe('Empty String', () => {
     emptyFields.forEach((field) => {
       it('should return error if field is empty', (done) => {
-        const emptyString = Object.assign({}, userData.document4);
-        emptyString[field] = ' ';
+        const emptyString = Object.assign({}, userData.document);
+        emptyString[field] = '';
+
         db.Document.create(emptyString)
           .then()
           .catch((error) => {
-            if (field !== 'access') {
-              should(error.errors[0].message)
+            should(error.errors[0].message)
               .equal(`${field} cannot be empty.`);
-            }
             done();
           });
       });
@@ -76,14 +72,13 @@ describe('Document Model', () => {
   describe('Access Violation', () => {
     it('should return error when access is not public or private',
     (done) => {
-      const invalidAccess = Object.assign({}, userData.document4);
-      invalidAccess.access = 'andela';
-      db.Document.create(invalidAccess)
+      userData.document.access = 'andela';
+
+      db.Document.create(userData.document)
         .then()
         .catch((error) => {
           should(error.errors[0].message)
-          .equal('access can only be public or private.');
-          should(error.errors[0].path).equal('access');
+            .equal('access can only be public or private.');
           done();
         });
     });
@@ -93,22 +88,31 @@ describe('Document Model', () => {
     let newDocument;
     beforeEach((done) => {
       db.Document.findById(userDocument.id)
-        .then((doc) => {
-          doc.update({ title: 'new andela book' })
+        .then((foundDocument) => {
+          foundDocument.update({ title: 'new andela book' })
             .then((updatedDocument) => {
               newDocument = updatedDocument;
               done();
             });
         });
     });
-    it('should give the correct result', (done) => {
-      db.Document.findById(userDocument.id)
-        .then((doc) => {
-          should(doc.id).equal(newDocument.id);
-          should(doc.title).equal('new andela book');
-          should(doc.content).equal(userDocument.content);
-          should(doc.access).equal(userDocument.access);
-          should(doc.ownerId).equal(userDocument.ownerId);
+
+    it('should return the updated title', (done) => {
+      newDocument.title.should.equal('new andela book');
+      done();
+    });
+
+    it('should ensure updatedAt and createdAt is not the same', (done) => {
+      newDocument.updatedAt.should.not.equal(newDocument.createdAt);
+      done();
+    });
+  });
+
+  describe('Delete Document', () => {
+    it('should return the updated title', (done) => {
+      db.Document.destroy({ where: { id: userDocument.id } })
+        .then((result) => {
+          result.should.equal(1);
           done();
         });
     });

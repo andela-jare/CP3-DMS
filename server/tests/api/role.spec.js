@@ -6,7 +6,10 @@ import db from '../../models';
 
 const server = supertest.agent(app);
 
-let adminToken, token, newRoleId, newRoleTitle;
+let adminToken;
+let token;
+let newRoleId;
+let newRoleTitle;
 
 describe('Roles:', () => {
   before((done) => {

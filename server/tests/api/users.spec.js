@@ -5,7 +5,13 @@ import userData from '../helpers/specHelper';
 import db from '../../models';
 
 const server = supertest.agent(app);
-let token, adminToken, thirdToken, userId, secondId, thirdId, adminId;
+let token;
+let adminToken;
+let thirdToken;
+let userId;
+let secondId;
+let thirdId;
+let adminId;
 
 describe('Users', () => {
   before((done) => {

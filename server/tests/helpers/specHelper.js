@@ -207,6 +207,12 @@ module.exports = {
     content: faker.lorem.paragraph()
   },
 
+  modelDocument: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph(),
+    ownerId: 1
+  },
+
   adminRole: {
     title: 'admin'
   },

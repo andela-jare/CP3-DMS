@@ -48,6 +48,9 @@ describe('Document Api', () => {
     db.User.destroy({
       where: {}
     });
+    db.Document.destroy({
+      where: {}
+    });
     done();
   });
 

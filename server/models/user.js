@@ -76,10 +76,6 @@ export default (sequelize, DataTypes) => {
   }, {
     classMethods: {
       associate(models) {
-        User.belongsTo(models.Role, {
-          onDelete: 'CASCADE',
-          foreignKey: 'roleId'
-        });
         User.hasMany(models.Document, {
           foreignKey: 'ownerId',
           onDelete: 'CASCADE'
