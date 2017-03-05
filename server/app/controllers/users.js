@@ -139,7 +139,9 @@ const Users = {
               currentPage: paginate.currentPage
             }
           });
-      });
+      })
+      .catch(error => res.status(500)
+        .send(error));
     }
   },
 
@@ -161,7 +163,9 @@ const Users = {
 
       res.status(200)
         .send(user);
-    });
+    })
+    .catch(error => res.status(500)
+        .send(error));
   },
 
   /**
@@ -191,7 +195,9 @@ const Users = {
       .then(() => res.status(200)
         .send({
           message: 'User deleted successfully.'
-        }));
+        }))
+      .catch(error => res.status(500)
+        .send(error));
   }
 };
 

@@ -57,7 +57,8 @@ const Documents = {
         res.status(403)
           .send({ message: 'You are unauthorized.' });
       })
-      .catch(error => res.status(400).send(error));
+      .catch(error => res.status(500)
+        .send(error));
   },
 
   /**
@@ -93,7 +94,9 @@ const Documents = {
               currentPage: paginate.currentPage
             }
           });
-      });
+      })
+      .catch(error => res.status(500)
+        .send(error));
     }
   },
 
@@ -106,7 +109,9 @@ const Documents = {
   update(req, res) {
     req.document.update(req.body, { plain: true })
       .then(updatedDocument => res.status(200)
-        .send(updatedDocument));
+        .send(updatedDocument))
+      .catch(error => res.status(400)
+        .send(error));
   },
 
   /**
@@ -125,7 +130,9 @@ const Documents = {
       .then(() => res.status(200)
         .send({
           message: 'Document successfully deleted!'
-        }));
+        }))
+      .catch(error => res.status(500)
+        .send(error));
   },
 
   /**
@@ -165,7 +172,9 @@ const Documents = {
               currentPage: paginate.currentPage
             }
           });
-      });
+      })
+      .catch(error => res.status(500)
+        .send(error));
     }
   },
   /**

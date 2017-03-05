@@ -29,7 +29,9 @@ const Roles = {
               currentPage: paginate.currentPage
             }
           });
-      });
+      })
+      .catch(error => res.status(500)
+        .send(error));
     }
   },
 
@@ -63,7 +65,9 @@ const Roles = {
         }
         res.status(200)
           .send(role);
-      });
+      })
+      .catch(error => res.status(500)
+        .send(error));
   },
 
   /**
@@ -75,7 +79,9 @@ const Roles = {
   update(req, res) {
     req.role.update(req.body)
       .then(updatedRole => res.status(200)
-        .send(updatedRole));
+        .send(updatedRole))
+      .catch(error => res.status(400)
+        .send(error));
   },
 
   /**
@@ -87,7 +93,9 @@ const Roles = {
   destroy(req, res) {
     req.role.destroy()
       .then(() => res.status(200)
-        .send({ message: 'Role deleted successfully.' }));
+        .send({ message: 'Role deleted successfully.' }))
+      .catch(error => res.status(500)
+        .send(error));
   }
 };
 
