@@ -15,8 +15,9 @@ class Paginate {
     }
     const currentPage = Math.floor(req.query.offset / req.query.limit) + 1;
     return {
-      totalPages,
-      currentPage
+      page: currentPage,
+      pageSize: entity.rows.length,
+      pageCount: totalPages
     };
   }
 }

@@ -24,9 +24,11 @@ const Roles = {
         res.status(200)
           .send({
             roles,
-            metaData: {
-              totalPages: paginate.totalPages,
-              currentPage: paginate.currentPage
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: roles.count,
+              pageCount: paginate.pageCount
             }
           });
       })

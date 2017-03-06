@@ -187,8 +187,8 @@ describe('Roles:', () => {
         should(res.status).equal(200);
         res.body.roles.rows.should.be.Array();
         res.body.roles.count.should.equal(3);
-        res.body.metaData.totalPages.should.equal(3);
-        res.body.metaData.currentPage.should.equal(1);
+        res.body.paginate.pageCount.should.equal(3);
+        res.body.paginate.page.should.equal(1);
         done();
       });
     });

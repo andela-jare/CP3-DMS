@@ -89,9 +89,11 @@ const Documents = {
         res.status(200)
           .send({
             documents,
-            metaData: {
-              totalPages: paginate.totalPages,
-              currentPage: paginate.currentPage
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: documents.count,
+              pageCount: paginate.pageCount
             }
           });
       })
@@ -167,9 +169,11 @@ const Documents = {
         res.status(200)
           .send({
             documents,
-            metaData: {
-              totalPages: paginate.totalPages,
-              currentPage: paginate.currentPage
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: documents.count,
+              pageCount: paginate.pageCount
             }
           });
       })
@@ -200,9 +204,11 @@ const Documents = {
         return res.status(200)
           .send({
             documents,
-            metaData: {
-              totalPages: paginate.totalPages,
-              currentPage: paginate.currentPage
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: documents.count,
+              pageCount: paginate.pageCount
             }
           });
       })

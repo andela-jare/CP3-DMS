@@ -134,9 +134,11 @@ const Users = {
         res.status(200)
           .send({
             users,
-            metaData: {
-              totalPages: paginate.totalPages,
-              currentPage: paginate.currentPage
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: users.count,
+              pageCount: paginate.pageCount
             }
           });
       })

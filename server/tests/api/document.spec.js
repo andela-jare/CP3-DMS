@@ -261,9 +261,9 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
-          res.body.metaData.totalPages.should.equal(1);
-          res.body.metaData.currentPage.should.equal(1);
-          should(res.body.documents.count).equal(3);
+          res.body.paginate.pageCount.should.equal(1);
+          res.body.paginate.page.should.equal(1);
+          should(res.body.paginate.totalCount).equal(3);
           should(res.body.documents.rows[0].access).equal('role');
           should(res.body.documents.rows[1].access).equal('public');
           done();
@@ -421,8 +421,8 @@ describe('Document Api', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
-          res.body.metaData.totalPages.should.equal(3);
-          res.body.metaData.currentPage.should.equal(2);
+          res.body.paginate.pageCount.should.equal(3);
+          res.body.paginate.page.should.equal(2);
           numOfDocuments = res.body.documents.rows.length;
           totalCount = res.body.documents.count;
           done();
@@ -447,8 +447,8 @@ describe('Document Api', () => {
           res.status.should.equal(200);
           res.body.documents.rows.should.be.a.Array();
           res.body.documents.rows.length.should.equal(1);
-          res.body.metaData.totalPages.should.equal(3);
-          res.body.metaData.currentPage.should.equal(1);
+          res.body.paginate.pageCount.should.equal(3);
+          res.body.paginate.page.should.equal(1);
           done();
         });
     });
@@ -474,8 +474,8 @@ describe('Document Api', () => {
       .end((err, res) => {
         res.status.should.equal(200);
         res.body.documents.rows.should.be.a.Array();
-        res.body.metaData.currentPage.should.equal(1);
-        res.body.metaData.totalPages.should.equal(1);
+        res.body.paginate.page.should.equal(1);
+        res.body.paginate.totalCount.should.equal(1);
         res.body.documents.count.should.equal(1);
         done();
       });

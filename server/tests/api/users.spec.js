@@ -338,10 +338,10 @@ describe('Users', () => {
         .end((err, res) => {
           res.status.should.equal(200);
           res.body.users.rows.should.be.Array();
-          res.body.metaData.totalPages.should.equal(3);
-          res.body.metaData.currentPage.should.equal(2);
-          res.body.users.rows.length.should.equal(2);
-          res.body.users.count.should.equal(6);
+          res.body.paginate.pageCount.should.equal(3);
+          res.body.paginate.page.should.equal(2);
+          res.body.paginate.pageSize.should.equal(2);
+          res.body.paginate.totalCount.should.equal(6);
           done();
         });
     });
