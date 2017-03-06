@@ -70,8 +70,7 @@ class Authenticate {
    */
   static generateToken(user) {
     const token = jwt.sign({
-      userId: user.id,
-      roleId: user.roleId
+      userId: user.id
     }, process.env.SECRET, { expiresIn: '24h' });
     return token;
   }

@@ -44,14 +44,6 @@ const UserHelper = {
     }
   },
 
-  documentAccess(document, req) {
-    if (document.access === 'public' ||
-      document.ownerId === req.decoded.userId
-      || req.decoded.roleId === 1) {
-      return true;
-    }
-  },
-
   norUserAdmin(req) {
     if (req.decoded.userId !== Number(req.params.id)
     || req.decoded.roleId === 1) {
