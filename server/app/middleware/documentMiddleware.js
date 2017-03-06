@@ -30,6 +30,14 @@ class DocumentAccess {
               message: 'You are restricted from performing this action.'
             });
         }
+
+        if (req.body.ownerId) {
+          return res.status(403)
+            .send({
+              message: 'You cannot update ownerId.'
+            });
+        }
+
         req.document = document;
         next();
       });

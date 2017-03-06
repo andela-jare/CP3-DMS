@@ -58,6 +58,11 @@ class UserAccess {
             .send({ message: 'User not found.' });
         }
 
+        if (req.body.id) {
+          return res.status(403)
+            .send({ message: 'You cannot update user id.' });
+        }
+
         if (UserHelper.userOrAdmin(req)) {
           return res.status(403)
             .send({

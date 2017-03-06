@@ -310,6 +310,19 @@ describe('Document Api', () => {
         });
     });
 
+    it('should not allow a user change the ownerId.', (done) => {
+      server.put(`/documents/${privateDocumentId}`)
+      .send({
+        ownerId: 2
+      })
+      .set({ 'x-access-token': adminToken })
+        .end((err, res) => {
+          res.status.should.equal(403);
+          res.body.message.should.equal('You cannot update ownerId.');
+          done();
+        });
+    });
+
     it('should edit document the user has access to.', (done) => {
       userData.updateDocument.title = 'Doc 1 edit';
 
@@ -335,7 +348,7 @@ describe('Document Api', () => {
         });
     });
 
-    it('should not allow a user is not logged in to update.', (done) => {
+    it('should not allow a user who is not logged in to update.', (done) => {
       server.put(`/documents/${publicDocumentId}`)
       .send(userData.updateDocument)
         .end((err, res) => {

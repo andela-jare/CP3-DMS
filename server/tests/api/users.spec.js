@@ -259,6 +259,19 @@ describe('Users', () => {
         });
     });
 
+    it('should not allow a user update user id', (done) => {
+      server.put(`/users/${userId}`)
+        .set({ 'x-access-token': token })
+        .send({
+          id: 10
+        })
+        .end((err, res) => {
+          res.status.should.equal(403);
+          res.body.message.should.equal('You cannot update user id.');
+          done();
+        });
+    });
+
     it(`should not allow an admin update other users attributes 
     other than role id`, (done) => {
       should(updatedUser.firstName)

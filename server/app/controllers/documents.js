@@ -48,6 +48,7 @@ const Documents = {
               message: 'Document not found.',
             });
         }
+
         if (DocumentHelper.documentAccess(document, req) ||
           DocumentHelper.isRoleAccess(document, req)) {
           return res.status(200)
