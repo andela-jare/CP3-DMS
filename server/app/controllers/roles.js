@@ -1,7 +1,7 @@
 import { Role } from '../../models';
-import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
 import utility from '../helper/utility';
+import Response from '../helper/response';
 
 const Roles = {
   /**
@@ -47,7 +47,7 @@ const Roles = {
     Role.create(req.body)
     .then(role => res.status(201)
       .send(role))
-    .catch(error => ErrorStatus.queryFail(res, 400, error));
+    .catch(error => Response.queryFail(res, 400, error));
   },
 
    /**
@@ -60,10 +60,8 @@ const Roles = {
     Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
-          return res.status(404)
-            .send({
-              message: `Role with id: ${req.params.id} not found.`
-            });
+          return Response
+            .notFound(res, `Role with id: ${req.params.id} not found.`);
         }
         res.status(200)
           .send(role);

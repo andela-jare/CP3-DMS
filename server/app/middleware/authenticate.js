@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import db from '../../models';
+import Response from '../helper/response';
 
 /**
  * Class to implement authentication middlewares
@@ -58,7 +59,7 @@ class Authenticate {
         if (role.title === 'admin') {
           next();
         } else {
-          return res.status(403).send({ message: 'You are not authorized!' });
+          return Response.restricted(res, 'You are not authorized!');
         }
       });
   }

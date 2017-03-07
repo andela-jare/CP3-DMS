@@ -1,9 +1,9 @@
 import { Document, User } from '../../models';
 import utility from '../helper/utility';
-import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
 import DocumentHelper from '../helper/documents';
 import UserHelper from '../helper/users';
+import Response from '../helper/response';
 
 const Documents = {
 
@@ -22,7 +22,7 @@ const Documents = {
     })
     .then(document => res.status(200)
       .send({ document }))
-    .catch(error => ErrorStatus.queryFail(res, 400, error));
+    .catch(error => Response.queryFail(res, 400, error));
   },
 
   /**
@@ -43,10 +43,7 @@ const Documents = {
     })
       .then((document) => {
         if (!document) {
-          return res.status(404)
-            .send({
-              message: 'Document not found.',
-            });
+          return Response.notFound(res, 'Document not found.');
         }
 
         if (DocumentHelper.documentAccess(document, req) ||
@@ -55,8 +52,7 @@ const Documents = {
             .send({ document });
         }
 
-        res.status(403)
-          .send({ message: 'You are unauthorized.' });
+        Response.restricted(res, 'You are unauthorized.');
       })
       .catch(error => res.status(500)
         .send(error));
@@ -194,10 +190,7 @@ const Documents = {
       Document.findAndCountAll(req.queryBuilder)
       .then((documents) => {
         if (!documents.count) {
-          return res.status(404)
-            .send({
-              message: `No results found for ${search}.`
-            });
+          return Response.notFound(res, `No results found for ${search}.`);
         }
 
         const paginate = Paginate.paginator(req, documents);

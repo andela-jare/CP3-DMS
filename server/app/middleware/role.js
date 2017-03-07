@@ -1,4 +1,5 @@
 import db from '../../models';
+import Response from '../helper/response';
 
 /**
  * class RoleMiddleware to autheticate users
@@ -17,17 +18,14 @@ class RoleMiddleware {
     db.Role.findById(req.params.id)
       .then((role) => {
         if (!role) {
-          return res.status(404)
-            .send({
-              message: `Role with id: ${req.params.id} not found.`
-            });
+          return Response
+            .notFound(res, `Role with id: ${req.params.id} not found.`);
         }
 
         if (role.title === 'admin' || role.title === 'regular') {
-          return res.status(403)
-            .send({
-              message: 'You cannot perform any action on admin or regular role.'
-            });
+          return Response.restricted(res,
+            'You cannot perform any action on admin or regular role.'
+            );
         }
 
         req.role = role;

@@ -1,6 +1,7 @@
 import db from '../../models';
 import DocumentHelper from '../helper/documents';
 import UserHelper from '../helper/users';
+import Response from '../helper/response';
 
 /**
  * class DocumentAccess to autheticate users
@@ -19,23 +20,17 @@ class DocumentAccess {
     db.Document.findById(req.params.id)
       .then((document) => {
         if (!document) {
-          return res.status(404)
-            .send({ message: 'Document Not found.' });
+          return Response.notFound(res, 'Document Not found.');
         }
 
         if (!DocumentHelper.isOwner(document, req)
           && !(UserHelper.isAdmin(req.decoded.roleId))) {
-          return res.status(403)
-            .send({
-              message: 'You are restricted from performing this action.'
-            });
+          return Response
+            .restricted(res, 'You are restricted from performing this action.');
         }
 
         if (req.body.ownerId) {
-          return res.status(403)
-            .send({
-              message: 'You cannot update ownerId.'
-            });
+          return Response.restricted(res, 'You cannot update ownerId.');
         }
 
         req.document = document;

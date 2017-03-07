@@ -1,5 +1,6 @@
 import db from '../../models';
 import UserHelper from '../helper/users';
+import Response from '../helper/response';
 
 /**
  * class UserAccess as middleware for user's controllers
@@ -18,22 +19,16 @@ class UserAccess {
     db.User.findById(req.params.id)
       .then((user) => {
         if (!user) {
-          return res.status(404)
-            .send({ message: 'User Not found.' });
+          return Response.notFound(res, 'User Not found.');
         }
 
         if (UserHelper.userOrAdmin(req)) {
-          return res.status(403)
-            .send({
-              message: 'You are restricted from performing this action.'
-            });
+          return Response
+            .restricted(res, 'You are restricted from performing this action.');
         }
 
         if (UserHelper.isAdmin(user.roleId)) {
-          return res.status(403)
-            .send({
-              message: 'You can not delete an admin!'
-            });
+          return Response.restricted(res, 'You can not delete an admin!');
         }
 
         req.user = user;
@@ -54,20 +49,16 @@ class UserAccess {
     db.User.findById(req.params.id)
       .then((user) => {
         if (!user) {
-          return res.status(404)
-            .send({ message: 'User not found.' });
+          return Response.notFound(res, 'User not found.');
         }
 
         if (req.body.id) {
-          return res.status(403)
-            .send({ message: 'You cannot update user id.' });
+          return Response.restricted(res, 'You cannot update user id.');
         }
 
         if (UserHelper.userOrAdmin(req)) {
-          return res.status(403)
-            .send({
-              message: 'You are restricted from performing this action.'
-            });
+          return Response
+            .restricted(res, 'You are restricted from performing this action.');
         }
 
         req.queryBuilder = UserHelper.usersFields(req.body);

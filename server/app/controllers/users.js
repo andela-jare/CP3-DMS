@@ -2,9 +2,9 @@ import bcrypt from 'bcrypt';
 import { User } from '../../models';
 import utility from '../helper/utility';
 import Authenticate from '../middleware/authenticate';
-import ErrorStatus from '../helper/ErrorStatus';
 import Paginate from '../helper/paginate';
 import UserHelper from '../helper/users';
+import Response from '../helper/response';
 
 const Users = {
   /**
@@ -29,7 +29,7 @@ const Users = {
           }
         });
     })
-    .catch(error => ErrorStatus.queryFail(res, 400, error));
+    .catch(error => Response.queryFail(res, 400, error));
   },
 
   /**
@@ -52,7 +52,7 @@ const Users = {
           }
         });
     })
-     .catch(error => ErrorStatus.queryFail(res, 400, error));
+     .catch(error => Response.queryFail(res, 400, error));
   },
 
   /**
@@ -91,10 +91,7 @@ const Users = {
           message: 'Incorrect username and password combination!'
         });
     })
-    .catch(() => res.status(404)
-      .send({
-        message: 'User does not exist.'
-      }));
+    .catch(() => Response.notFound(res, 'User does not exist.'));
   },
 
   /**
@@ -159,8 +156,7 @@ const Users = {
     })
     .then((user) => {
       if (!user) {
-        return res.status(404)
-          .send({ message: 'User not found.' });
+        return Response.notFound(res, 'User not found.');
       }
 
       res.status(200)
