@@ -31,6 +31,26 @@ const UserHelper = {
     ];
   },
 
+  viewFields(data) {
+    const allowedFields = [
+      'id',
+      'username',
+      'firstName',
+      'lastName',
+      'email',
+      'roleId'
+    ];
+    const result = {};
+
+    Object.keys(data.dataValues).forEach((field) => {
+      if (allowedFields.includes(field)) {
+        result[field] = data.dataValues[field];
+      }
+    });
+
+    return result;
+  },
+
   userOrAdmin(req) {
     if (Number(req.params.id) !== req.decoded.userId
     && req.decoded.roleId !== 1) {

@@ -179,8 +179,10 @@ const Users = {
   update(req, res) {
     req.user.update(req.queryBuilder)
       .then((updatedUser) => {
+        const result = UserHelper.viewFields(updatedUser);
+
         res.status(200)
-          .send({ updatedUser });
+          .send({ updatedUser: result });
       })
       .catch(error => res.status(400)
         .send({ error }));
