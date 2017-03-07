@@ -74,7 +74,7 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(401);
         res.body.message.should
-          .equal('Invalid token. Login or resgister to continue');
+          .equal('Invalid token. Login or register to continue');
         done();
       });
     });
@@ -149,7 +149,7 @@ describe('Roles:', () => {
       .end((error, res) => {
         should(res.status).equal(401);
         res.body.message.should
-          .equal('Invalid token. Login or resgister to continue');
+          .equal('Invalid token. Login or register to continue');
         done();
       });
     });

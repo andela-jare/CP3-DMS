@@ -20,18 +20,14 @@ class Authenticate {
     if (token) {
       jwt.verify(token, process.env.SECRET, (error, decoded) => {
         if (error) {
-          return res.status(401)
-            .send({
-              message: 'Invalid token. Login or resgister to continue'
-            });
+          return Response
+            .authenticate(res, 'Invalid token. Login or register to continue');
         }
         db.User.findById(decoded.userId)
         .then((user) => {
           if (user.token !== 'registered' && user.token !== token) {
-            return res.status(401)
-              .send({
-                message: 'Please sign in or register to continue.'
-              });
+            return Response
+              .authenticate(res, 'Please sign in or register to continue.');
           }
           req.decoded = decoded;
           req.decoded.roleId = user.roleId;
@@ -39,9 +35,8 @@ class Authenticate {
         });
       });
     } else {
-      res.status(401).send({
-        message: 'Authentication is required. No token provided.'
-      });
+      Response
+        .authenticate(res, 'Authentication is required. No token provided.');
     }
   }
 

@@ -30,13 +30,26 @@ class Response {
   }
 
   /**
-   * Method for returning 404 errors
+   * Method for returning 403 errors
    * @param {Object} res - response object
    * @param {String} message - message to return back to user
    * @return {Object} res - response object
    */
   static restricted(res, message) {
     return res.status(403)
+      .send({
+        message
+      });
+  }
+
+  /**
+   * Method for returning 401 errors
+   * @param {Object} res - response object
+   * @param {String} message - message to return back to user
+   * @return {Object} res - response object
+   */
+  static authenticate(res, message) {
+    return res.status(401)
       .send({
         message
       });
