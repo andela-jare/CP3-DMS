@@ -1,7 +1,7 @@
 import express from 'express';
 import users from '../controllers/users';
 import Authenticate from '../middleware/authenticate';
-import UserAccess from '../middleware/userMiddleware';
+import UserAccess from '../middleware/user';
 
 const user = express.Router();
 user.post('/users/create',
