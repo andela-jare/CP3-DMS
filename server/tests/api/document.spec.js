@@ -226,9 +226,9 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.a.Array();
-          should(res.body.documents.rows[0].access).equal('private');
-          should(res.body.documents.count).equal(4);
+          res.body.documents.should.be.a.Array();
+          should(res.body.documents[0].access).equal('private');
+          should(res.body.paginate.totalCount).equal(4);
           done();
         });
     });
@@ -248,8 +248,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': adminToken })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.a.Array();
-          should(res.body.documents.count).equal(4);
+          res.body.documents.should.be.a.Array();
+          should(res.body.paginate.totalCount).equal(4);
           done();
         });
     });
@@ -260,12 +260,12 @@ describe('Document Api', () => {
       .set({ 'x-access-token': secondToken })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.a.Array();
+          res.body.documents.should.be.a.Array();
           res.body.paginate.pageCount.should.equal(1);
           res.body.paginate.page.should.equal(1);
           should(res.body.paginate.totalCount).equal(3);
-          should(res.body.documents.rows[0].access).equal('role');
-          should(res.body.documents.rows[1].access).equal('public');
+          should(res.body.documents[0].access).equal('role');
+          should(res.body.documents[1].access).equal('public');
           done();
         });
     });
@@ -379,8 +379,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.a.Array();
-          res.body.documents.count.should.equal(3);
+          res.body.documents.should.be.a.Array();
+          res.body.paginate.totalCount.should.equal(3);
           done();
         });
     });
@@ -391,10 +391,10 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.a.Array();
-          res.body.documents.count.should.equal(3);
-          res.body.documents.rows[0].access.should.equal('public');
-          res.body.documents.rows[1].access.should.equal('role');
+          res.body.documents.should.be.a.Array();
+          res.body.paginate.totalCount.should.equal(3);
+          res.body.documents[0].access.should.equal('public');
+          res.body.documents[1].access.should.equal('role');
           done();
         });
     });
@@ -406,9 +406,9 @@ describe('Document Api', () => {
       .set({ 'x-access-token': secondToken })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.Array();
-          res.body.documents.count.should.equal(1);
-          res.body.documents.rows[0].access.should.equal('public');
+          res.body.documents.should.be.Array();
+          res.body.paginate.totalCount.should.equal(1);
+          res.body.documents[0].access.should.equal('public');
           done();
         });
     });
@@ -433,11 +433,11 @@ describe('Document Api', () => {
         .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.a.Array();
+          res.body.documents.should.be.a.Array();
           res.body.paginate.pageCount.should.equal(3);
           res.body.paginate.page.should.equal(2);
-          numOfDocuments = res.body.documents.rows.length;
-          totalCount = res.body.documents.count;
+          numOfDocuments = res.body.documents.length;
+          totalCount = res.body.paginate.totalCount;
           done();
         });
     });
@@ -458,8 +458,8 @@ describe('Document Api', () => {
         .set({ 'x-access-token': token })
         .end((err, res) => {
           res.status.should.equal(200);
-          res.body.documents.rows.should.be.a.Array();
-          res.body.documents.rows.length.should.equal(1);
+          res.body.documents.should.be.a.Array();
+          res.body.documents.length.should.equal(1);
           res.body.paginate.pageCount.should.equal(3);
           res.body.paginate.page.should.equal(1);
           done();
@@ -474,8 +474,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
       .end((err, res) => {
         res.status.should.equal(200);
-        res.body.documents.rows.should.be.a.Array();
-        should(res.body.documents.count).equal(1);
+        res.body.documents.should.be.a.Array();
+        should(res.body.paginate.totalCount).equal(1);
         done();
       });
     });
@@ -486,10 +486,9 @@ describe('Document Api', () => {
       .set({ 'x-access-token': token })
       .end((err, res) => {
         res.status.should.equal(200);
-        res.body.documents.rows.should.be.a.Array();
+        res.body.documents.should.be.a.Array();
         res.body.paginate.page.should.equal(1);
         res.body.paginate.totalCount.should.equal(1);
-        res.body.documents.count.should.equal(1);
         done();
       });
     });
@@ -499,8 +498,8 @@ describe('Document Api', () => {
       .set({ 'x-access-token': adminToken })
       .end((err, res) => {
         res.status.should.equal(200);
-        res.body.documents.rows.should.be.a.Array();
-        should(res.body.documents.count).equal(1);
+        res.body.documents.should.be.a.Array();
+        should(res.body.paginate.totalCount).equal(1);
         done();
       });
     });

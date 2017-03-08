@@ -130,7 +130,7 @@ const Users = {
         const paginate = Paginate.paginator(req, users);
         res.status(200)
           .send({
-            users,
+            users: users.rows,
             paginate: {
               pageSize: paginate.pageSize,
               page: paginate.page,

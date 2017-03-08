@@ -28,6 +28,8 @@
   "homepage": "https://github.com/andela-jare/CP3-DMS#readme",
   "devDependencies": {
     "Faker": "^0.7.2",
+    "chai": "^3.5.0",
+    "chai-spies": "^0.7.1",
     "coveralls": "*",
     "eslint": "^3.15.0",
     "eslint-config-airbnb-base": "^11.1.0",
@@ -38,6 +40,7 @@
     "fm-log": "^4.4.3",
     "mocha": "^3.2.0",
     "mocha-lcov-reporter": "^1.2.0",
+    "node-mocks-http": "^1.6.1",
     "should": "^11.2.0",
     "supertest": "^3.0.0"
   },

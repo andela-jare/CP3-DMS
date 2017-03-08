@@ -23,7 +23,7 @@ const Roles = {
 
         res.status(200)
           .send({
-            roles,
+            roles: roles.rows,
             paginate: {
               pageSize: paginate.pageSize,
               page: paginate.page,

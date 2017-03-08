@@ -173,8 +173,8 @@ describe('Roles:', () => {
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(200);
-        res.body.roles.rows.should.be.Array();
-        res.body.roles.count.should.equal(3);
+        res.body.roles.should.be.Array();
+        res.body.paginate.totalCount.should.equal(3);
         done();
       });
     });
@@ -185,8 +185,8 @@ describe('Roles:', () => {
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(200);
-        res.body.roles.rows.should.be.Array();
-        res.body.roles.count.should.equal(3);
+        res.body.roles.should.be.Array();
+        res.body.paginate.totalCount.should.equal(3);
         res.body.paginate.pageCount.should.equal(3);
         res.body.paginate.page.should.equal(1);
         done();
@@ -199,10 +199,10 @@ describe('Roles:', () => {
       .set({ 'x-access-token': adminToken })
       .end((error, res) => {
         should(res.status).equal(200);
-        should(res.body.roles.rows[0].id).equal(1);
-        should(res.body.roles.rows[0].title).equal('admin');
-        should(res.body.roles.rows[1].id).equal(2);
-        should(res.body.roles.rows[1].title).equal('regular');
+        should(res.body.roles[0].id).equal(1);
+        should(res.body.roles[0].title).equal('admin');
+        should(res.body.roles[1].id).equal(2);
+        should(res.body.roles[1].title).equal('regular');
         done();
       });
     });

@@ -85,7 +85,7 @@ const Documents = {
 
         res.status(200)
           .send({
-            documents,
+            documents: documents.rows,
             paginate: {
               pageSize: paginate.pageSize,
               page: paginate.page,
@@ -165,7 +165,7 @@ const Documents = {
 
         res.status(200)
           .send({
-            documents,
+            documents: documents.rows,
             paginate: {
               pageSize: paginate.pageSize,
               page: paginate.page,
@@ -197,7 +197,7 @@ const Documents = {
 
         return res.status(200)
           .send({
-            documents,
+            documents: documents.rows,
             paginate: {
               pageSize: paginate.pageSize,
               page: paginate.page,
