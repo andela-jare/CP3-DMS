@@ -88,6 +88,8 @@ class DocumentAccess {
       } };
     }
 
+    req.queryBuilder.limit = req.query.limit;
+    req.queryBuilder.offset = req.query.offset;
     req.queryBuilder.order = '"createdAt" DESC';
     next();
   }

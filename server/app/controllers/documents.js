@@ -79,6 +79,9 @@ const Documents = {
     query.order = '"createdAt" DESC';
 
     if (utility.limitOffset(req, res) === true) {
+      query.limit = req.query.limit;
+      query.offset = req.query.offset;
+
       Document.findAndCountAll(query)
       .then((documents) => {
         const paginate = Paginate.paginator(req, documents);

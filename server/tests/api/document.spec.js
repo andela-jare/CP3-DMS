@@ -435,6 +435,7 @@ describe('Document Api', () => {
           res.status.should.equal(200);
           res.body.documents.should.be.a.Array();
           res.body.paginate.pageCount.should.equal(3);
+          res.body.paginate.pageSize.should.equal(res.body.documents.length);
           res.body.paginate.page.should.equal(2);
           numOfDocuments = res.body.documents.length;
           totalCount = res.body.paginate.totalCount;
