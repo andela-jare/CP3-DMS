@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import httpMocks from 'node-mocks-http';
 import events from 'events';
 import should from 'should';
@@ -79,13 +80,10 @@ describe('Middleware', () => {
         next: () => {}
       };
 
-      const next = sinon.spy(middlewareStub, 'next');
+      sinon.spy(middlewareStub, 'next');
+
       authenticate.auth(req, res, middlewareStub.next);
-      // expect(middlewareStub.next).to.have.been.called(done());
-      // sinon.assert.calledOnce(middlewareStub.next);
-      next.restore();
       expect(middlewareStub.next).to.have.been.calledOnce;
-      // sinon.assert.calledOnce(middlewareStub.next);
       done();
     });
   });
