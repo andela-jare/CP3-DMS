@@ -73,7 +73,7 @@ describe('Middleware', () => {
       const req = httpMocks.createRequest({
         method: 'GET',
         url: '/users',
-        headers: { 'x-access-token': 'token' }
+        headers: { 'x-access-token': token }
       });
       const res = buildResponse();
       const middlewareStub = {
