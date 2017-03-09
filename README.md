@@ -46,101 +46,73 @@ It allows private, public and role access documents to be retrieved by its owner
 It ensures only authenticated users can delete, edit and update documents they own.
 It allows admin users to be able to update and delete any document.
 
+---
+### Postman Collection
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/238b94f40ca6e8e195d7)
+
+### Hosted App on Heroku
+[Heroku Link](https://cp3-dms.herokuapp.com)
+
+---
+
+
 ### Usage
 
-#### Users Endpoint
+**Users**
 
-**To SIGNUP a user:**
-Make a POST request to /users endpoint.
-Send data with valid username, email, password, firstName and lastName attributes.
-It returns a token and few attributes of the created user.
+Request type | Endpoint | Action
+------------ | -------- | ------
+**POST** | /users | Sign up user
+**GET** | /users | Get all users
+**GET** | /users/:id | Get details of a specific user
+**PUT** | /users/:id | Edit user details
+**DELETE** | /users/:id | Remove a user from database
+**GET** | /login | To log a user in
+**GET** | /logout | To log a user out
+**GET** | /users/:id/documents | Retrieve all documents created by a user
 
-**To CREATE a user:**
-Make a POST request to /users/create endpoint.
-As an admin, send data with valid username, email, password, firstName, lastName and roleId attributes.
-It returns few attributes of the created user.
+**Roles**
 
-**To LOGIN a user:**
-Make a POST request to /login endpoint.
-Send data with valid username and password attributes.
-It returns a token back to the user.
+Request type | Endpoint | Action
+------------ | -------- | ------
+**POST** | /roles | Create a new role
+**GET** | /roles | Get all created roles
+**GET** | /role/:id | Get a specific role
+**PUT** | /role/:id | Edit a specific role
+**DELETE** | /role/:id | Delete a specific role
 
-**To LOGOUT a user:**
-Make a POST request to /logout endpoint.
+**Documents**
 
-**To GET all users:**
-Make a GET request to /users endpoint.
-Set a token in the authorization headers.
-Use set({ 'x-access-token': <token> })
+Request type | Endpoint | Action
+------------ | -------- | ------
+**POST** | /documents | Create a new document
+**GET** | /documents | Retrieve all documents
+**GET** | /documents/:id | Retrieve a specific document
+**GET** | /documents/search?search=new | Search documents using query
+**PUT** | /documents/:id | Update a specific document
+**DELETE** | /documents/:id | Delete a specific document from database
 
-**To GET a user:**
-Make a GET request to /users/:id endpoint.
-Pass id of the user in the url parameters. Set token in the authorization headers.
-
-**To UPDATE or DELETE a user:**
-Make a PUT or DELETE request to /users/:id endpoint.
-Pass id of the user in the url parameters.
-Set the user's token in the authorization headers.
-Send a valid updated data for a PUT request.
-
-#### Roles Endpoint
-
-**To CREATE a role:**
-Make a POST request to /roles endpoint.
-Set an admin user's token in the authorization headers.
-Send data with valid title attribute.
-
-**To GET all roles:**
-Make a GET request to /roles endpoint.
-Set an admin user's token in the authorization headers.
-Use set({ 'x-access-token': <adminToken> })
-
-**To GET a role:**
-Make a GET request to /roles/:id endpoint.
-Pass id of the role in the url parameters.
-Set the admin user's token in the authorization headers.
-
-**To UPDATE or DELETE a role:**
-Make a PUT or DELETE request to /roles/:id endpoint.
-Pass id of the role in the url parameters.
-Set the admin user's token in the authorization headers.
-Send a valid updated data on the PUT request.
-
-#### Documents Endpoint
-
-**To CREATE a document:**
-Make a POST request to /documents endpoint.
-Set a user's token in the authorization headers.
-Send data with valid title and content attributes.
-
-**To GET all documents:**
-Make a GET request to /documents endpoint.
-Set a user's token in the authorization headers.
-Use set({ 'x-access-token': <token> })
-
-**To GET a document:**
-Make a GET request to documents/:id endpoint.
-Pass id of the document in the url parameters.
-Set a user's token in the authorization headers.
-
-**To UPDATE or DELETE a document:**
-Make a PUT or DELETE request to /documents/:id endpoint.
-Pass id of the document in the url parameters.
-Set a user's token in the authorization headers.
-Send a valid updated data on the PUT request.
-
+### Technologies Used
+---
+- JavaScript (ES6)
+- Node.js
+- Express
+- Postgresql
+- Sequelize ORM.
 
 ### Installation
+---
 
-Clone the project repository.
-Run git clone https://github.com/andela-jare/CP3-DMS.git.
-Change directory into the CP3-DMS directory.
-Run npm install to install the dependencies in the package.json file.
-Run npm run start:dev to start the project for development.
-Run npm start to start the project for production.
-Use Postman or any API testing tool of your choice to access the endpoints defined above.
+- Clone the project repository.
+- Run git clone https://github.com/andela-jare/CP3-DMS.git.
+- Change directory into the CP3-DMS directory.
+- Run npm install to install the dependencies in the package.json file.
+- Run npm run start:dev to start the project for development.
+- Run npm start to start the project for production.
+- Use Postman or any API testing tool of your choice to access the endpoints defined above.
 
 #### Contributing
+---
 
 1. Fork this repositry to your account.
 2. Clone your repositry: git clone https://github.com/andela-jare/CP3-DMS.git
@@ -149,7 +121,7 @@ Use Postman or any API testing tool of your choice to access the endpoints defin
 5. Push to the remote branch: git push origin new-feature
 6. Open a pull request.
 
-**Licence**
+#### Licence
 ISC
 
 Copyright (c) 2017 Jorg Are
