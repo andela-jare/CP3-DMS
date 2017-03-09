@@ -2,8 +2,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/andela-jare/CP3-DMS/badge.svg?branch=feature%2F139453891%2Fapi-endpoints)](https://coveralls.io/github/andela-jare/CP3-DMS?branch=feature%2F139453891%2Fapi-endpoints)
 [![Code Climate](https://codeclimate.com/github/andela-jare/CP3-DMS/badges/gpa.svg)](https://codeclimate.com/github/andela-jare/CP3-DMS)
 
-https://cp3-dms.herokuapp.com
-
 # CP3-DMS
 ## Document management system
 
