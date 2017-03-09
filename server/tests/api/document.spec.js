@@ -466,6 +466,30 @@ describe('Document Api', () => {
           done();
         });
     });
+
+    it('should fail if query limit is not a number',
+    (done) => {
+      server.get(`/users/${userId}/documents?limit=a&offset=0`)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(400);
+          res.body.message.should
+            .equal('Please enter a valid number for both offset and limit.');
+          done();
+        });
+    });
+
+    it('should fail if query offset is not a number',
+    (done) => {
+      server.get(`/users/${userId}/documents?limit=2&offset=q`)
+        .set({ 'x-access-token': token })
+        .end((err, res) => {
+          res.status.should.equal(400);
+          res.body.message.should
+            .equal('Please enter a valid number for both offset and limit.');
+          done();
+        });
+    });
   });
 
   describe('Search:', () => {
