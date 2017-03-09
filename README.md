@@ -15,36 +15,36 @@ Below are some of its features:
 
 #### Authentication
 
-It uses JWT for authentication.
-It generates a token and returns it to the client.
-It verifies the token on every request.
-It ensures a user is authenticated to access some routes.
+- It uses JWT for authentication.
+- It generates a token and returns it to the client.
+- It verifies the token on every request.
+- It ensures a user is authenticated to access some routes.
 
 #### Users
 
-It allows users to be created.
-It sets a newly created user's role to regular by default.
-It allows the created user to edit, update and delete its information.
-All users can be retrieved.
-It allows an admin create an admin user.
-An admin can also update a regular user to an admin status.
+- It allows users to be created.
+- It sets a newly created user's role to regular by default.
+- It allows the created user to edit, update and delete its information.
+- All users can be retrieved.
+- It allows an admin create an admin user.
+- An admin can also update a regular user to an admin status.
 
 #### Roles
 
-It ensures that users have roles.
-It ensures users roles can be atleast an admin or regular role.
-It ensures new roles can be created, updated and deleted by an admin user.
-It returns all roles to an admin user.
+- It ensures that users have roles.
+- It ensures users roles can be atleast an admin or regular role.
+- It ensures new roles can be created, updated and deleted by an admin user.
+- It returns all roles to an admin user.
 
 #### Documents
 
-It allows new documents to be created by authenticated users.
-It ensures all documents have access roles defined.
-It ensures newly created documents have it's access role set to public by default.
-It allows admin users to retrieve all documents.
-It allows private, public and role access documents to be retrieved by its owners.
-It ensures only authenticated users can delete, edit and update documents they own.
-It allows admin users to be able to update and delete any document.
+- It allows new documents to be created by authenticated users.
+- It ensures all documents have access roles defined.
+- It ensures newly created documents have it's access role set to public by default.
+- It allows admin users to retrieve all documents.
+- It allows private, public and role access documents to be retrieved by its owners.
+- It ensures only authenticated users can delete, edit and update documents they own.
+- It allows admin users to be able to update and delete any document.
 
 ---
 ### Postman Collection
