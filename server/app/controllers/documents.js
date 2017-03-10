@@ -1,7 +1,11 @@
-import { Document } from '../../models';
-import helper from '../middleware/helper';
+import { Document, User } from '../../models';
+import utility from '../helper/utility';
+import Paginate from '../helper/paginate';
+import DocumentHelper from '../helper/documents';
+import UserHelper from '../helper/users';
+import Response from '../helper/response';
 
-export default {
+const Documents = {
 
   /**
    * Create a new document
@@ -16,10 +20,9 @@ export default {
       access: req.body.access,
       ownerId: req.decoded.userId
     })
-    .then(document => res.status(200).send({ document }))
-    .catch(error => res.status(400).send({
-      message: error.errors[0].message
-    }));
+    .then(document => res.status(200)
+      .send({ document }))
+    .catch(error => Response.queryFail(res, 400, error));
   },
 
   /**
@@ -29,19 +32,30 @@ export default {
    * @returns {Object} - Returns response object
    */
   getDocument(req, res) {
-    Document.findById(req.params.id)
+    Document.findOne({
+      where: {
+        id: req.params.id
+      },
+      include: [{
+        model: User,
+        attributes: ['roleId']
+      }]
+    })
       .then((document) => {
         if (!document) {
-          return res.status(404).send({
-            message: 'Document not found.',
-          });
-        }
-        if (helper.documentAccess(document, req)) {
-          return res.status(200).send({ document });
+          return Response.notFound(res, 'Document not found.');
         }
 
-        res.status(403).send({ message: 'You are unauthorized.' });
-      });
+        if (DocumentHelper.documentAccess(document, req) ||
+          DocumentHelper.isRoleAccess(document, req)) {
+          return res.status(200)
+            .send({ document });
+        }
+
+        Response.restricted(res, 'You are unauthorized.');
+      })
+      .catch(error => res.status(500)
+        .send(error));
   },
 
   /**
@@ -55,17 +69,36 @@ export default {
       where: {
         $or: [
           { ownerId: { $eq: req.decoded.userId } },
-          { access: { $eq: 'public' } }
+          { access: {
+            $in: ['public', 'role']
+          } }
         ]
       }
     };
     query = req.decoded.roleId === 1 ? {} : query;
     query.order = '"createdAt" DESC';
-    if (helper.limitOffset(query, req, res) === true) {
-      Document.findAll(query)
-      .then((document) => {
-        res.status(200).send({ document });
-      });
+
+    if (utility.limitOffset(req, res) === true) {
+      query.limit = req.query.limit;
+      query.offset = req.query.offset;
+
+      Document.findAndCountAll(query)
+      .then((documents) => {
+        const paginate = Paginate.paginator(req, documents);
+
+        res.status(200)
+          .send({
+            documents: documents.rows,
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: documents.count,
+              pageCount: paginate.pageCount
+            }
+          });
+      })
+      .catch(error => res.status(500)
+        .send(error));
     }
   },
 
@@ -76,19 +109,11 @@ export default {
    * @returns {Object} - Returns response object
    */
   update(req, res) {
-    Document.findById(req.params.id)
-      .then((document) => {
-        if (!document) {
-          return res.status(404).send({ message: 'Document Not found.' });
-        }
-        if (!helper.isOwner(document, req)) {
-          return res.status(403).send({
-            message: 'You are not allowed to edit this document.'
-          });
-        }
-        document.update(req.body)
-        .then(updatedDocument => res.status(200).send(updatedDocument));
-      });
+    req.document.update(req.body, { plain: true })
+      .then(updatedDocument => res.status(200)
+        .send(updatedDocument))
+      .catch(error => res.status(400)
+        .send(error));
   },
 
   /**
@@ -98,21 +123,18 @@ export default {
    * @returns {Object} - Returns response object
    */
   destroy(req, res) {
-    Document.findById(req.params.id)
-      .then((document) => {
-        if (!document) {
-          return res.status(404).send({ message: 'Document Not found' });
-        }
-        if (helper.userOrAdmin(document.ownerId, req)) {
-          return res.status(403).send({
-            message: 'This document does not belong to you.'
-          });
-        }
-        document.destroy()
-        .then(() => res.status(200).send({
+    const query = {
+      where: {
+        id: req.params.id
+      }
+    };
+    Document.destroy(query)
+      .then(() => res.status(200)
+        .send({
           message: 'Document successfully deleted!'
-        }));
-      });
+        }))
+      .catch(error => res.status(500)
+        .send(error));
   },
 
   /**
@@ -128,7 +150,7 @@ export default {
         ownerId: id
       }
     };
-    if (helper.norUserAdmin(req)) {
+    if (UserHelper.norUserAdmin(req)) {
       query = {
         where: {
           ownerId: id,
@@ -136,9 +158,27 @@ export default {
         }
       };
     }
-    if (helper.limitOffset(query, req, res) === true) {
-      Document.findAll(query)
-      .then(documents => res.status(200).send({ documents }));
+    if (utility.limitOffset(req, res) === true) {
+      query.limit = req.query.limit;
+      query.offset = req.query.offset;
+
+      Document.findAndCountAll(query)
+      .then((documents) => {
+        const paginate = Paginate.paginator(req, documents);
+
+        res.status(200)
+          .send({
+            documents: documents.rows,
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: documents.count,
+              pageCount: paginate.pageCount
+            }
+          });
+      })
+      .catch(error => res.status(500)
+        .send(error));
     }
   },
   /**
@@ -149,51 +189,30 @@ export default {
    */
   search(req, res) {
     const search = req.query.search.trim();
-    let query = {
-      where: {
-        $and: [{
-          $or: {
-            title: {
-              $ilike: `%${search}%`
-            },
-            content: {
-              $ilike: `%${search}%`
-            }
-          }
-        }, {
-          $or: {
-            ownerId: req.decoded.userId,
-            access: 'public'
-          }
+    if (utility.limitOffset(req, res) === true) {
+      Document.findAndCountAll(req.queryBuilder)
+      .then((documents) => {
+        if (!documents.count) {
+          return Response.notFound(res, `No results found for ${search}.`);
         }
-        ]
-      }
-    };
 
-    if (helper.isAdmin(req.decoded.roleId)) {
-      query = { where: {
-        $or: {
-          title: {
-            $ilike: `%${search}%`
-          },
-          content: {
-            $ilike: `%${search}%`
-          }
-        }
-      } };
-    }
-    query.order = '"createdAt" DESC';
-    if (helper.limitOffset(query, req, res) === true) {
-      Document.findAndCountAll(query)
-      .then((docs) => {
-        if (!docs.count) {
-          return res.status(404).send({
-            message: `No results found for ${search}.`
+        const paginate = Paginate.paginator(req, documents);
+
+        return res.status(200)
+          .send({
+            documents: documents.rows,
+            paginate: {
+              pageSize: paginate.pageSize,
+              page: paginate.page,
+              totalCount: documents.count,
+              pageCount: paginate.pageCount
+            }
           });
-        }
-        return res.status(200).send(docs);
       })
-      .catch(error => res.status(400).send({ error }));
+      .catch(error => res.status(400)
+        .send({ error }));
     }
   }
 };
+
+export default Documents;

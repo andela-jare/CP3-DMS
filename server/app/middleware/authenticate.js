@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import db from '../../models';
+import Response from '../helper/response';
 
 /**
  * Class to implement authentication middlewares
@@ -15,16 +16,18 @@ class Authenticate {
    * @return {void} - Returns void
    */
   static auth(req, res, next) {
-    const token = req.headers['x-access-token'] || req.body.token;
+    const token = req.headers['x-access-token'];
     if (token) {
       jwt.verify(token, process.env.SECRET, (error, decoded) => {
-        if (error) return res.status(401).send(error);
+        if (error) {
+          return Response
+            .authenticate(res, 'Invalid token. Login or register to continue');
+        }
         db.User.findById(decoded.userId)
         .then((user) => {
-          if (!user.token) {
-            return res.status(401).send({
-              message: 'Please sign in or register to continue.'
-            });
+          if (user.token !== 'registered' && user.token !== token) {
+            return Response
+              .authenticate(res, 'Please sign in or register to continue.');
           }
           req.decoded = decoded;
           req.decoded.roleId = user.roleId;
@@ -32,9 +35,8 @@ class Authenticate {
         });
       });
     } else {
-      res.status(401).send({
-        message: 'Authentication is required. No token provided.'
-      });
+      Response
+        .authenticate(res, 'Authentication is required. No token provided.');
     }
   }
 
@@ -52,9 +54,21 @@ class Authenticate {
         if (role.title === 'admin') {
           next();
         } else {
-          return res.status(403).send({ message: 'You are not authorized!' });
+          return Response.restricted(res, 'You are not authorized!');
         }
       });
+  }
+
+   /**
+   * Method to genrate token
+   * @param {Object} user - User's object
+   * @return {String} - Returns jwt token for further authentication
+   */
+  static generateToken(user) {
+    const token = jwt.sign({
+      userId: user.id
+    }, process.env.SECRET, { expiresIn: '24h' });
+    return token;
   }
 }
 export default Authenticate;

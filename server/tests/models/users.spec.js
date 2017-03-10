@@ -1,56 +1,86 @@
 import should from 'should';
 import db from '../../models';
-import testData from '../helpers/specHelper';
-
-
-const userParams = testData.firstUser;
+import userData from '../helpers/specHelper';
 
 const requiredFields = ['username', 'firstName', 'lastName', 'email', 'roleId'];
 let regularUser;
 
 describe('User model', () => {
-  after((done) => { db.User.destroy({ where: {} }); done(); });
+  after((done) => {
+    db.User.destroy({ where: {} });
+    done();
+  });
 
   describe('Create user', () => {
     it('creates a new user', (done) => {
-      db.User.create(userParams)
+      db.User.create(userData.firstUser)
       .then((user) => {
-        regularUser = user.dataValues;
-        user.firstName.should.equal(userParams.firstName);
-        user.lastName.should.equal(userParams.lastName);
-        user.username.should.equal(userParams.username);
-        user.email.should.equal(userParams.email);
+        regularUser = user;
+        user.firstName.should.equal(userData.firstUser.firstName);
+        user.lastName.should.equal(userData.firstUser.lastName);
+        user.username.should.equal(userData.firstUser.username);
+        user.email.should.equal(userData.firstUser.email);
         user.should.have.property('password');
         done();
       });
     });
 
+    it('should ensure user password is hashed', (done) => {
+      regularUser.password.should.not.equal(userData.firstUser.password);
+      done();
+    });
+
+    it('should ensure username is more than two characters', (done) => {
+      regularUser.firstName.length.should.be.above(2);
+      done();
+    });
+
+    it('should ensure first name is more than a character', (done) => {
+      regularUser.firstName.length.should.be.above(1);
+      done();
+    });
+
+    it('should ensure last name is more than a character', (done) => {
+      regularUser.lastName.length.should.be.above(1);
+      done();
+    });
+
     it('should fail when email is invalid', (done) => {
-      db.User.create(testData.badUser)
+      db.User.create(userData.invalidEmail)
         .then()
         .catch((error) => {
-          error.errors[0].message.should.equal('Invalid email');
-          error.errors[0].type.should.equal('Validation error');
-          error.errors[0].path.should.equal('email');
+          error.errors[0].message.should.equal('Email address is invalid');
           done();
         });
     });
 
-    it('should fails when password character is not up to 6', (done) => {
-      db.User.create(testData.badUser2)
+    it('should fail when password characters is not up to 6', (done) => {
+      db.User.create(userData.badPassword)
         .then()
         .catch((error) => {
           error.errors[0].message.should
-          .equal('Password must be at least 6 characters.');
-          error.errors[0].type.should.equal('Validation error');
+            .equal('Password must be at least 6 characters.');
+          done();
+        });
+    });
+
+    it('should ensure a default roleId of 2 is being saved', (done) => {
+      regularUser.roleId.should.equal(2);
+      done();
+    });
+
+    it('should ensure a roleId of 1 is saved for an admin', (done) => {
+      db.User.create(userData.admin)
+        .then((user) => {
+          user.roleId.should.equal(1);
           done();
         });
     });
   });
 
   describe('Unique', () => {
-    it('should not allow duplicates users', (done) => {
-      db.User.create(userParams)
+    it('should not allow duplicate username', (done) => {
+      db.User.create(userData.firstUser)
       .then((newUser) => {
         should.not.exist(newUser);
       })
@@ -60,9 +90,9 @@ describe('User model', () => {
       });
     });
 
-    it('should not allow duplicates users', (done) => {
-      userParams.username = 'iAmUniqueUsername';
-      db.User.create(userParams)
+    it('should not allow duplicate email address', (done) => {
+      userData.firstUser.username = 'iAmUniqueUsername';
+      db.User.create(userData.firstUser)
       .then((newUser) => {
         should.not.exist(newUser);
       })
@@ -73,17 +103,15 @@ describe('User model', () => {
     });
   });
 
-  describe('NOT NULL VIOLATIONS', () => {
+  describe('Not null validation', () => {
     requiredFields.forEach((field) => {
       it(`should fail when ${field} is null`, (done) => {
-        const nullField = Object.assign({}, testData.firstUser);
+        const nullField = Object.assign({}, userData.firstUser);
         nullField[field] = null;
         db.User.create(nullField)
           .then()
           .catch((error) => {
             error.errors[0].message.should.equal(`${field} cannot be null`);
-            error.errors[0].type.should.equal('notNull Violation');
-            error.errors[0].path.should.equal(field);
             done();
           });
       });

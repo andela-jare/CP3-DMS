@@ -21,7 +21,7 @@ module.exports = {
     password: faker.internet.password(),
   },
 
-  adminUser: {
+  admin: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -66,7 +66,7 @@ module.exports = {
     roleId: 1
   },
 
-  regularUser: {
+  regular: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -74,7 +74,7 @@ module.exports = {
     password: faker.internet.password()
   },
 
-  regularUser2: {
+  regular2: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -114,7 +114,7 @@ module.exports = {
     password: faker.internet.password(),
   },
 
-  regularUser7: {
+  regular7: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -130,14 +130,32 @@ module.exports = {
     password: faker.internet.password(),
   },
 
-  badUser: {
+  invalidEmail: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     email: 'iambademail',
+    password: faker.internet.password(),
     lastName: faker.name.lastName(),
   },
 
-  badUser2: {
+  createdByAdmin: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  },
+
+  adminCreatedByAdmin: {
+    username: faker.internet.userName(),
+    firstName: faker.name.firstName(),
+    lastName: faker.name.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+    roleId: 1
+  },
+
+  badPassword: {
     username: faker.internet.userName(),
     firstName: faker.name.firstName(),
     lastName: faker.name.lastName(),
@@ -174,20 +192,32 @@ module.exports = {
     content: faker.lorem.paragraph()
   },
 
-  document2: {
+  privateDocument: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph(),
     access: 'private'
   },
 
-  document3: {
+  document2: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph()
+  },
+
+  documentWithRoleAccess: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph(),
+    access: 'role'
   },
 
   document4: {
     title: faker.company.catchPhrase(),
     content: faker.lorem.paragraph()
+  },
+
+  modelDocument: {
+    title: faker.company.catchPhrase(),
+    content: faker.lorem.paragraph(),
+    ownerId: 1
   },
 
   adminRole: {
@@ -216,5 +246,13 @@ module.exports = {
 
   newRole4: {
     title: 'guest'
+  },
+
+  updateDocument: {
+    title: 'Changed by admin',
+  },
+
+  updateDocument2: {
+    title: 'Not valid',
   }
 };

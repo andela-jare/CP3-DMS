@@ -10,7 +10,8 @@
     "seed": "NODE_ENV=test ./node_modules/.bin/babel-node server/tests/helpers/seedHelper.js",
     "migrate": "sequelize db:migrate",
     "mocha": "mocha --compilers js:babel-core/register server/tests",
-    "test": "NODE_ENV=test npm run seed && rm -rf coverage/ && NODE_ENV=test babel-node ./node_modules/babel-istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec server/tests server/tests/models",
+    "test": "NODE_ENV=test npm run seed && rm -rf coverage/ && npm run test:build server/tests/api server/tests/models server/tests/middleware",
+    "test:build": "NODE_ENV=test babel-node ./node_modules/babel-istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- -R spec",
     "test:watch": "npm run test -- --watch",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls",
     "lint": "node_modules/.bin/esw",
@@ -28,6 +29,9 @@
   "homepage": "https://github.com/andela-jare/CP3-DMS#readme",
   "devDependencies": {
     "Faker": "^0.7.2",
+    "chai": "^3.5.0",
+    "chai-sinon": "^2.8.1",
+    "chai-spies": "^0.7.1",
     "coveralls": "*",
     "eslint": "^3.15.0",
     "eslint-config-airbnb-base": "^11.1.0",
@@ -38,7 +42,11 @@
     "fm-log": "^4.4.3",
     "mocha": "^3.2.0",
     "mocha-lcov-reporter": "^1.2.0",
+    "node-mocks-http": "^1.6.1",
     "should": "^11.2.0",
+    "should-sinon": "0.0.5",
+    "sinon": "^1.17.7",
+    "sinon-chai": "^2.8.0",
     "supertest": "^3.0.0"
   },
   "dependencies": {

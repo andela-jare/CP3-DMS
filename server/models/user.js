@@ -46,12 +46,13 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         isEmail: {
-          msg: 'Invalid email'
+          msg: 'Email address is invalid'
         }
       }
     },
     password: {
       type: DataTypes.STRING,
+      allowNull: false,
       validate: {
         notEmpty: true,
         isMin(value) {
@@ -76,10 +77,6 @@ export default (sequelize, DataTypes) => {
   }, {
     classMethods: {
       associate(models) {
-        User.belongsTo(models.Role, {
-          onDelete: 'CASCADE',
-          foreignKey: 'roleId'
-        });
         User.hasMany(models.Document, {
           foreignKey: 'ownerId',
           onDelete: 'CASCADE'

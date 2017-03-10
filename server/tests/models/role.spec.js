@@ -4,24 +4,23 @@ import testData from '../helpers/specHelper';
 
 describe('ROLE', () => {
   let newRole;
+
   describe('Create Role', () => {
-    it('should save role detail', (done) => {
-      db.Role.create(testData.newRole4)
+    it('should create a new role', (done) => {
+      db.Role.create(testData.newRole2)
         .then((role) => {
-          newRole = role.dataValues;
-          should(role.dataValues.title).equal(testData.newRole4.title);
+          newRole = role;
+          should(role.title).equal(testData.newRole2.title);
+          should(role).have.property('createdAt');
           done();
         });
     });
 
     it('should fail when role title already exist', (done) => {
-      db.Role.create(testData.newRole4)
+      db.Role.create(testData.newRole2)
         .then()
         .catch((error) => {
           should(error.errors[0].message).equal('title must be unique');
-          should(error.errors[0].type).equal('unique violation');
-          should(error.errors[0].path).equal('title');
-          should(error.errors[0].value).equal('guest');
           done();
         });
     });
@@ -34,8 +33,18 @@ describe('ROLE', () => {
         .then()
         .catch((error) => {
           should(error.errors[0].message).equal('title cannot be null');
-          should(error.errors[0].type).equal('notNull Violation');
-          should(error.errors[0].value).equal(null);
+          done();
+        });
+    });
+  });
+
+  describe('EMPTY String violation', () => {
+    it('should fail for empty string title', (done) => {
+      const emptyTitle = { title: ' ' };
+      db.Role.create(emptyTitle)
+        .then()
+        .catch((error) => {
+          error.errors[0].message.should.equal('title cannot be empty.');
           done();
         });
     });
